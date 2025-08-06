@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDG Construction Submittal Template</title>
+    <style>
+        /* Base Styles - Professional & Minimalistic */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
+            z-index: 1000;
+            transition: all 0.2s;
+        }
+
+        .print-button:hover {
+            background: #334155;
+            transform: translateY(-2px);
+        }
+
+        /* Header - Professional Branding */
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 32px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6);
+        }
+
+        .company-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .project-info {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content {
+            padding: 32px;
+        }
+
+        /* Mode Toggle */
+        .submittal-mode-toggle {
+            text-align: center;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .mode-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .mode-button {
+            padding: 12px 24px;
+            border: 2px solid #3b82f6;
+            background: white;
+            color: #3b82f6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .mode-button.active {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .mode-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Submittal Number */
+        .submittal-number {
+            font-size: 22px;
+            font-weight: 700;
+            color: #dc2626;
+            text-align: center;
+            background: white;
+            border: 3px solid #dc2626;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 32px;
+            letter-spacing: 1px;
+        }
+
+        .submittal-number input {
+            display: inline;
+            width: 60px;
+            border: none;
+            background: transparent;
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 22px;
+            text-align: center;
+            border-bottom: 2px solid #dc2626;
+            outline: none;
+        }
+
+        /* Form Sections */
+        .form-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .contractor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #fef3c7;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .compliance-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #e0f2fe;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .section-title {
+            margin: 0 0 20px 0;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #1e293b;
+        }
+
+        .field {
+            margin-bottom: 20px;
+        }
+
+        .field label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Multiple Submittals Table */
+        .multiple-submittals-section {
+            margin-bottom: 32px;
+            padding: 24px;
+            background: #fef3c7;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+            display: none;
+        }
+
+        .multiple-submittals-section.active {
+            display: block !important;
+        }
+
+        .submittals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .submittals-table th {
+            background: #1e293b;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .submittals-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 12px;
+        }
+
+        .submittals-table input,
+        .submittals-table select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .add-submittal-button {
+            background: #059669;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .add-submittal-button:hover {
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        .remove-submittal {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        /* Approval Sections */
+        .enhanced-approval-section {
+            margin: 32px 0;
+            padding: 24px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border-left: 4px solid #059669;
+        }
+
+        .review-party {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #d1fae5;
+        }
+
+        .review-party h4 {
+            margin: 0 0 16px 0;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #059669;
+            padding-bottom: 8px;
+        }
+
+        .review-content {
+            display: grid;
+            grid-template-columns: 1fr 250px;
+            gap: 20px;
+        }
+
+        .comments-section textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 12px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .status-checkboxes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 11px;
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .status-checkboxes label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: normal;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .status-checkboxes input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .signature-field {
+            border-bottom: 2px solid #374151;
+            height: 32px;
+            margin: 12px 0 8px 0;
+        }
+
+        .date-field {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* Individual Approval Sections for Multiple Mode */
+        .individual-approval-section {
+            margin: 32px 0;
+            padding: 24px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border-left: 4px solid #059669;
+            page-break-inside: avoid;
+        }
+
+        .submittal-approval-title {
+            margin: 0 0 20px 0;
+            color: #1e293b;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            border-bottom: 2px solid #059669;
+            padding-bottom: 8px;
+        }
+
+        /* File Attachments */
+        .attachment-section {
+            margin: 32px 0;
+            padding: 24px;
+            background: #fef3c7;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .file-upload-area {
+            border: 3px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #f8fafc;
+        }
+
+        .file-upload-area:hover,
+        .file-upload-area.dragover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .file-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-info {
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .file-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .file-details {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+
+        .file-remove {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* Reference Key */
+        .reference-key-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #6b7280;
+            font-size: 10px;
+            color: #374151;
+        }
+
+        .reference-key-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .ref-section h5 {
+            margin: 0 0 8px 0;
+            color: #1e293b;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+        }
+
+        /* PERFECT A4 MULTI-PAGE PRINT STYLES */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0.6in 0.5in 0.5in 0.5in;
+                orphans: 3;
+                widows: 3;
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+                box-sizing: border-box !important;
+            }
+
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 10px !important;
+                line-height: 1.35 !important;
+                color: #000 !important;
+                font-family: Arial, sans-serif !important;
+                overflow: visible !important;
+            }
+
+            .print-button {
+                display: none !important;
+            }
+
+            .container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                max-width: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                background: white !important;
+            }
+
+            .submittal-mode-toggle {
+                display: none !important;
+            }
+
+            /* Header - Preserve branding */
+            .header {
+                background: #0f172a !important;
+                color: white !important;
+                padding: 16px !important;
+                page-break-after: avoid;
+                text-align: center !important;
+            }
+
+            .header::before {
+                background: linear-gradient(90deg, #f59e0b, #ef4444, #8b5cf6) !important;
+                height: 3px !important;
+            }
+
+            .company-name {
+                font-size: 18px !important;
+                color: white !important;
+                margin-bottom: 4px !important;
+                font-weight: 700 !important;
+            }
+
+            .project-info {
+                font-size: 12px !important;
+                color: white !important;
+            }
+
+            .content {
+                padding: 8px 6px !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                overflow: visible !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Submittal Number */
+            .submittal-number {
+                border: 2px solid #dc2626 !important;
+                color: #dc2626 !important;
+                font-size: 14px !important;
+                padding: 8px !important;
+                margin-bottom: 12px !important;
+                background: white !important;
+                page-break-after: avoid;
+                text-align: center !important;
+            }
+
+            .submittal-number input {
+                border: none !important;
+                background: transparent !important;
+                color: #dc2626 !important;
+                font-weight: 700 !important;
+                font-size: 14px !important;
+            }
+
+            /* Form Sections */
+            .form-section {
+                background: #f8fafc !important;
+                border-left: 3px solid #3b82f6 !important;
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block !important;
+                border-radius: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .contractor-section {
+                background: #fef3c7 !important;
+                border-left: 3px solid #f59e0b !important;
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                display: block !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .compliance-section {
+                background: #e0f2fe !important;
+                border-left: 3px solid #0ea5e9 !important;
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .multiple-submittals-section {
+                background: #fef3c7 !important;
+                border-left: 3px solid #f59e0b !important;
+                padding: 8px !important;
+                margin-bottom: 8px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            .section-title {
+                font-size: 12px !important;
+                margin-bottom: 8px !important;
+                color: #000 !important;
+                font-weight: 700 !important;
+            }
+
+            /* Table */
+            .submittals-table {
+                font-size: 8px !important;
+                page-break-inside: avoid;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                margin: 8px 0 !important;
+                background: white !important;
+            }
+
+            .submittals-table th {
+                background: #1e293b !important;
+                color: white !important;
+                padding: 4px 2px !important;
+                font-size: 8px !important;
+                font-weight: 700 !important;
+            }
+
+            .submittals-table td {
+                padding: 3px 2px !important;
+                font-size: 7px !important;
+                border-bottom: 1px solid #ddd !important;
+            }
+
+            .submittals-table input,
+            .submittals-table select {
+                padding: 1px !important;
+                font-size: 7px !important;
+                border: none !important;
+                background: transparent !important;
+                color: #000 !important;
+                width: 100% !important;
+            }
+
+            .add-submittal-button,
+            .remove-submittal {
+                display: none !important;
+            }
+
+            /* Fields */
+            .field {
+                margin-bottom: 8px !important;
+                page-break-inside: avoid;
+            }
+
+            .field label {
+                font-size: 8px !important;
+                margin-bottom: 2px !important;
+                color: #000 !important;
+                display: block !important;
+                font-weight: 600 !important;
+            }
+
+            .field input,
+            .field select {
+                width: 100% !important;
+                padding: 2px !important;
+                border: none !important;
+                border-bottom: 1px solid #000 !important;
+                border-radius: 0 !important;
+                font-size: 9px !important;
+                background: transparent !important;
+                color: #000 !important;
+                box-shadow: none !important;
+                outline: none !important;
+            }
+
+            /* Approval Sections */
+            .enhanced-approval-section {
+                background: #f0fdf4 !important;
+                border-left: 3px solid #059669 !important;
+                padding: 8px !important;
+                margin: 6px 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* Individual Approval Sections for Multiple Mode - Print */
+            .individual-approval-section {
+                background: #f0fdf4 !important;
+                border-left: 3px solid #059669 !important;
+                padding: 8px !important;
+                margin: 6px 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-before: auto !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+            }
+
+            .submittal-approval-title {
+                font-size: 11px !important;
+                margin-bottom: 6px !important;
+                color: #000 !important;
+                text-align: center !important;
+                border-bottom: 1px solid #000 !important;
+                padding-bottom: 3px !important;
+                font-weight: 700 !important;
+                page-break-after: avoid !important;
+            }
+
+            .review-party {
+                background: white !important;
+                border: 1px solid #d1fae5 !important;
+                padding: 6px !important;
+                margin-bottom: 4px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                overflow: visible !important;
+            }
+
+            .review-party h4 {
+                font-size: 10px !important;
+                margin-bottom: 6px !important;
+                color: #000 !important;
+                border-bottom: 1px solid #000 !important;
+                padding-bottom: 2px !important;
+                font-weight: 700 !important;
+            }
+
+            .review-content {
+                display: block !important;
+            }
+
+            .comments-section {
+                margin-bottom: 8px !important;
+            }
+
+            .comments-section label {
+                font-size: 8px !important;
+                color: #000 !important;
+                margin-bottom: 2px !important;
+                display: block !important;
+                font-weight: 600 !important;
+            }
+
+            .comments-section textarea {
+                border: none !important;
+                border-bottom: 1px solid #000 !important;
+                background: transparent !important;
+                font-size: 8px !important;
+                min-height: 20px !important;
+                padding: 2px !important;
+                width: 100% !important;
+                color: #000 !important;
+                resize: none !important;
+            }
+
+            .status-checkboxes {
+                font-size: 7px !important;
+                background: transparent !important;
+                padding: 4px !important;
+                border: 1px solid #ddd !important;
+                display: block !important;
+            }
+
+            .status-checkboxes label {
+                font-size: 7px !important;
+                color: #000 !important;
+                margin-bottom: 2px !important;
+            }
+
+            .status-checkboxes input[type="checkbox"] {
+                width: 10px !important;
+                height: 10px !important;
+                -webkit-appearance: checkbox !important;
+                -moz-appearance: checkbox !important;
+                appearance: checkbox !important;
+            }
+
+            .signature-field {
+                height: 16px !important;
+                margin: 4px 0 2px 0 !important;
+                border-bottom: 1px solid #000 !important;
+            }
+
+            .date-field {
+                border: none !important;
+                border-bottom: 1px solid #000 !important;
+                background: transparent !important;
+                font-size: 8px !important;
+                padding: 2px !important;
+                color: #000 !important;
+            }
+
+            /* Attachments */
+            .attachment-section {
+                background: #fef3c7 !important;
+                border-left: 3px solid #f59e0b !important;
+                padding: 10px !important;
+                margin: 10px 0 !important;
+                page-break-inside: avoid;
+            }
+
+            .file-upload-area {
+                display: none !important;
+            }
+
+            .file-item {
+                page-break-inside: avoid;
+                margin-bottom: 4px !important;
+                padding: 4px !important;
+                background: white !important;
+                border: 1px solid #ddd !important;
+                font-size: 8px !important;
+            }
+
+            .file-name {
+                font-size: 9px !important;
+                color: #000 !important;
+                font-weight: 600 !important;
+            }
+
+            .file-details {
+                font-size: 7px !important;
+                color: #000 !important;
+            }
+
+            .file-remove {
+                display: none !important;
+            }
+
+            /* Reference Key - ENHANCED PDF COMPATIBILITY */
+            .reference-key-section {
+                background: #f8fafc !important;
+                border-left: 2px solid #6b7280 !important;
+                padding: 4px !important;
+                margin-top: 6px !important;
+                margin-bottom: 0 !important;
+                font-size: 4px !important;
+                color: #000 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-before: auto !important;
+                page-break-after: avoid !important;
+                overflow: visible !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                display: block !important;
+                height: auto !important;
+                min-height: auto !important;
+                max-height: none !important;
+            }
+
+            .reference-key-section h4 {
+                font-size: 6px !important;
+                margin: 0 0 3px 0 !important;
+                color: #000 !important;
+                font-weight: 700 !important;
+                text-align: center !important;
+                page-break-after: avoid !important;
+                line-height: 1.1 !important;
+            }
+
+            .reference-key-grid {
+                display: table !important;
+                width: 100% !important;
+                table-layout: fixed !important;
+                border-collapse: collapse !important;
+                overflow: visible !important;
+                box-sizing: border-box !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .ref-section {
+                display: table-cell !important;
+                width: 33.33% !important;
+                vertical-align: top !important;
+                padding: 0 2px !important;
+                margin: 0 !important;
+                overflow: visible !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                box-sizing: border-box !important;
+            }
+
+            .ref-section h5 {
+                font-size: 5px !important;
+                margin: 0 0 1px 0 !important;
+                color: #000 !important;
+                font-weight: 700 !important;
+                text-transform: uppercase !important;
+                line-height: 1.1 !important;
+                page-break-after: avoid !important;
+            }
+
+            .ref-section div {
+                font-size: 4px !important;
+                line-height: 1.1 !important;
+                overflow: visible !important;
+                word-break: normal !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* Force all reference key elements to be visible */
+            .reference-key-section,
+            .reference-key-section *,
+            .reference-key-grid,
+            .reference-key-grid *,
+            .ref-section,
+            .ref-section * {
+                display: table-cell !important;
+                overflow: visible !important;
+                max-height: none !important;
+                height: auto !important;
+                min-height: auto !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                position: static !important;
+                clip: auto !important;
+                clip-path: none !important;
+            }
+
+            .reference-key-section {
+                display: block !important;
+            }
+
+            .reference-key-grid {
+                display: table !important;
+            }
+
+            /* Override ALL inline styles aggressively */
+            .reference-key-section h4[style],
+            .reference-key-section div[style],
+            .reference-key-section h5[style],
+            .reference-key-section p[style],
+            .reference-key-section span[style],
+            .reference-key-section strong[style] {
+                font-size: 4px !important;
+                line-height: 1.1 !important;
+                margin: 0 0 1px 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                display: inline !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                height: auto !important;
+                max-height: none !important;
+                min-height: auto !important;
+            }
+
+            .reference-key-section h4[style] {
+                font-size: 6px !important;
+                margin: 0 0 3px 0 !important;
+                text-align: center !important;
+                display: block !important;
+            }
+
+            .reference-key-section h5[style] {
+                font-size: 5px !important;
+                font-weight: 700 !important;
+                display: block !important;
+            }
+
+            /* Final override for all text in reference key */
+            .reference-key-section * {
+                font-size: 4px !important;
+                line-height: 1.1 !important;
+                color: #000 !important;
+                overflow: visible !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                max-height: none !important;
+                height: auto !important;
+                min-height: auto !important;
+            }
+
+            .reference-key-section h4 {
+                font-size: 6px !important;
+                display: block !important;
+            }
+
+            .reference-key-section h5 {
+                font-size: 5px !important;
+                font-weight: 700 !important;
+                display: block !important;
+            }
+
+            /* Hide interactive elements */
+            .mode-buttons,
+            .batch-actions,
+            .add-submittal-button {
+                display: none !important;
+            }
+
+            /* PERFECT PAGE BREAK CONTROL */
+            h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+                orphans: 3 !important;
+                widows: 3 !important;
+            }
+
+            /* Keep sections together */
+            .form-section,
+            .contractor-section,
+            .compliance-section,
+            .attachment-section,
+            .enhanced-approval-section,
+            .individual-approval-section,
+            .review-party,
+            .submittal-mode-toggle,
+            .multiple-submittals-section {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                orphans: 3 !important;
+                widows: 3 !important;
+            }
+
+            /* Force page breaks before major sections when needed */
+            .enhanced-approval-section,
+            .individual-approval-section {
+                page-break-before: auto !important;
+            }
+
+            /* Keep submittal number with following content */
+            .submittal-number {
+                page-break-after: avoid !important;
+            }
+
+            /* Keep table headers with content */
+            .submittals-table thead {
+                page-break-after: avoid !important;
+            }
+
+            .submittals-table tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* Keep approval workflow sections together */
+            .submittal-approval-title {
+                page-break-after: avoid !important;
+                page-break-before: auto !important;
+            }
+
+            /* Ensure signature areas don't break from their labels */
+            .signature-field {
+                page-break-before: avoid !important;
+            }
+
+            /* Keep status checkboxes with their labels */
+            .status-checkboxes {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* Reference key at the end - FIXED */
+            .reference-key-section {
+                page-break-before: auto !important;
+                page-break-inside: auto !important;
+                break-inside: auto !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            /* Two-column layout for forms in print */
+            .form-section > div,
+            .contractor-section > div {
+                width: 48% !important;
+                display: inline-block !important;
+                vertical-align: top !important;
+                margin-right: 2% !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            /* Global spacing optimization for A4 */
+            .section-title {
+                margin-top: 4px !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* Ensure tables fit properly */
+            .submittals-table {
+                width: 100% !important;
+                table-layout: fixed !important;
+                overflow: visible !important;
+            }
+
+            /* Optimize spacing for multi-page flow */
+            * {
+                max-width: 100% !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+            }
+
+            /* Compliance checkboxes */
+            .compliance-section > div {
+                display: inline-block !important;
+                width: 32% !important;
+                margin-right: 1% !important;
+                font-size: 8px !important;
+            }
+
+            .compliance-section input[type="checkbox"] {
+                width: 10px !important;
+                height: 10px !important;
+            }
+
+            .compliance-section label {
+                font-size: 8px !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button" onclick="window.print()">🖨️ PRINT TO PDF</button>
+
+    <div class="container">
+        <div class="header">
+            <div class="company-name">UPSCALE DEVELOPMENT GROUP</div>
+            <div class="project-info">CLIENT: PARADIGM ORAL | CONSTRUCTION SUBMITTAL</div>
+        </div>
+
+        <div class="content">
+            <!-- Submittal Mode Toggle -->
+            <div class="submittal-mode-toggle">
+                <h4 class="section-title">📋 SUBMITTAL MODE</h4>
+                <p style="margin: 0; font-size: 12px; color: #6b7280;">Choose whether to submit a single submittal or multiple submittals in one package</p>
+                <div class="mode-buttons">
+                    <button class="mode-button active" onclick="switchMode('single')" id="singleModeBtn">
+                        📄 Single Submittal
+                    </button>
+                    <button class="mode-button" onclick="switchMode('multiple')" id="multipleModeBtn">
+                        📚 Multiple Submittals
+                    </button>
+                </div>
+            </div>
+
+            <!-- Single Submittal Mode -->
+            <div id="singleSubmittalMode">
+                <div class="submittal-number">
+                    SUBMITTAL NO: UDG-PO-25-<input type="text" placeholder="XXX" id="divisionNumber">-<input type="text" placeholder="000" id="sequenceNumber">
+                </div>
+
+                <div class="form-section">
+                    <div>
+                        <h4 class="section-title">Project Information</h4>
+                        <div class="field">
+                            <label>Project Name</label>
+                            <input type="text" value="Paradigm Oral Facility" id="projectName">
+                        </div>
+                        <div class="field">
+                            <label>Submittal Date</label>
+                            <input type="date" id="submittalDate">
+                        </div>
+                        <div class="field">
+                            <label>Required Response Date</label>
+                            <input type="date" id="responseDate">
+                        </div>
+                        <div class="field">
+                            <label>CSI Division</label>
+                            <select id="csiDivision">
+                                <option value="">Select Division</option>
+                                <option value="03">03 - Concrete</option>
+                                <option value="05">05 - Metals</option>
+                                <option value="06">06 - Wood/Plastics</option>
+                                <option value="07">07 - Thermal/Moisture Protection</option>
+                                <option value="08">08 - Openings</option>
+                                <option value="09">09 - Finishes</option>
+                                <option value="10">10 - Specialties</option>
+                                <option value="11">11 - Equipment</option>
+                                <option value="12">12 - Furnishings</option>
+                                <option value="13">13 - Special Construction</option>
+                                <option value="14">14 - Conveying Equipment</option>
+                                <option value="21">21 - Fire Suppression</option>
+                                <option value="22">22 - Plumbing</option>
+                                <option value="23">23 - HVAC</option>
+                                <option value="26">26 - Electrical</option>
+                                <option value="27">27 - Communications</option>
+                                <option value="28">28 - Electronic Safety & Security</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="section-title">Submittal Details</h4>
+                        <div class="field">
+                            <label>Specification Section</label>
+                            <input type="text" placeholder="e.g., 03 30 00.53" id="specSection">
+                        </div>
+                        <div class="field">
+                            <label>Submittal Type</label>
+                            <select id="submittalType">
+                                <option value="">Select Type</option>
+                                <option value="SD">SD - Shop Drawings</option>
+                                <option value="PD">PD - Product Data</option>
+                                <option value="SM">SM - Samples</option>
+                                <option value="MM">MM - Mix Designs</option>
+                                <option value="TE">TE - Test Reports</option>
+                                <option value="CD">CD - Certificates</option>
+                                <option value="MS">MS - Material Safety Data</option>
+                                <option value="WR">WR - Warranty Information</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Priority Level</label>
+                            <select id="priority">
+                                <option value="">Select Priority</option>
+                                <option value="CRITICAL">🔴 CRITICAL - Stop Work</option>
+                                <option value="HIGH">🟠 HIGH - Rush Review</option>
+                                <option value="NORMAL">🟡 NORMAL - Standard</option>
+                                <option value="LOW">🟢 LOW - No Rush</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Revision Number</label>
+                            <select id="revision">
+                                <option value="00">00 - Initial Submission</option>
+                                <option value="01">01 - First Revision</option>
+                                <option value="02">02 - Second Revision</option>
+                                <option value="03">03 - Third Revision</option>
+                                <option value="04">04 - Fourth Revision</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Description</label>
+                            <input type="text" placeholder="Brief description of submittal" id="description">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multiple Submittals Mode -->
+            <div class="multiple-submittals-section" id="multipleSubmittalsMode">
+                <h3 class="section-title">📚 Multiple Submittals Package</h3>
+
+                <button class="add-submittal-button" onclick="addSubmittalRow()">
+                    ➕ Add New Submittal
+                </button>
+
+                <div style="overflow-x: auto;">
+                    <table class="submittals-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 120px;">Submittal No.</th>
+                                <th style="width: 200px;">Description</th>
+                                <th style="width: 100px;">CSI Division</th>
+                                <th style="width: 80px;">Type</th>
+                                <th style="width: 80px;">Priority</th>
+                                <th style="width: 100px;">Spec Section</th>
+                                <th style="width: 80px;">Rev.</th>
+                                <th style="width: 60px;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="submittalsTableBody">
+                            <!-- Dynamic rows will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Individual Approval Sections for Each Submittal -->
+                <div id="individualApprovalsContainer">
+                    <!-- Individual approval sections will be added here dynamically -->
+                </div>
+            </div>
+
+            <!-- Contractor Information -->
+            <div class="contractor-section">
+                <div>
+                    <h4 class="section-title">Submitting Contractor Information</h4>
+                    <div class="field">
+                        <label>Company Name</label>
+                        <input type="text" placeholder="Contractor Company Name" id="contractorName">
+                    </div>
+                    <div class="field">
+                        <label>Contact Person</label>
+                        <input type="text" placeholder="Project Manager/Superintendent" id="contactPerson">
+                    </div>
+                    <div class="field">
+                        <label>Email</label>
+                        <input type="email" placeholder="contact@company.com" id="contactEmail">
+                    </div>
+                </div>
+                <div>
+                    <h4 class="section-title">Package Information</h4>
+                    <div class="field">
+                        <label>Package Date</label>
+                        <input type="date" id="packageDate">
+                    </div>
+                    <div class="field">
+                        <label>Required Response Date</label>
+                        <input type="date" id="packageResponseDate">
+                    </div>
+                    <div class="field">
+                        <label>Package Notes</label>
+                        <input type="text" placeholder="Special instructions or notes" id="packageNotes">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compliance Section -->
+            <div class="compliance-section">
+                <h4 class="section-title">Compliance & Quality Assurance</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                    <div>
+                        <input type="checkbox" id="codeCompliant">
+                        <label for="codeCompliant" style="display: inline; margin-left: 8px; font-weight: normal; text-transform: none; font-size: 12px;">Building Code Compliant</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="leedCompliant">
+                        <label for="leedCompliant" style="display: inline; margin-left: 8px; font-weight: normal; text-transform: none; font-size: 12px;">LEED Requirements Met</label>
+                    </div>
+                    <div>
+                        <input type="checkbox" id="qcReviewed">
+                        <label for="qcReviewed" style="display: inline; margin-left: 8px; font-weight: normal; text-transform: none; font-size: 12px;">QC Manager Reviewed</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Attachment Section -->
+            <div class="attachment-section">
+                <h3 class="section-title">📎 Submittal Attachments</h3>
+
+                <div class="file-upload-area" onclick="document.getElementById('fileInput').click();" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                    <p style="margin: 0; font-size: 16px; font-weight: 600; color: #374151;">Drop files here or click to browse</p>
+                    <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">Supports: PDF, DWG, DOC, JPG, PNG, ZIP (Max 10MB per file)</p>
+                    <input type="file" id="fileInput" multiple accept=".pdf,.dwg,.doc,.docx,.jpg,.jpeg,.png,.zip,.xlsx,.xls">
+                </div>
+
+                <div id="fileList">
+                    <!-- Files will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Enhanced Approval Section -->
+            <div class="enhanced-approval-section" id="enhancedApprovalSection">
+                <h3 class="section-title">🔍 DETAILED REVIEW & APPROVAL WORKFLOW</h3>
+
+                <div class="review-party">
+                    <h4>👷 CONTRACTOR SUBMITTAL REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Internal Quality Control Comments:</label>
+                            <textarea placeholder="QC Manager review comments, completeness check, compliance verification..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Submittal Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Ready for Review</label>
+                                <label><input type="checkbox"> ⚠️ Incomplete - Revise</label>
+                                <label><input type="checkbox"> 🚫 Withdrawn</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-party">
+                    <h4>🏗️ STRUCTURAL ENGINEER REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Structural Engineering Comments:</label>
+                            <textarea placeholder="Load calculations, connection details, structural adequacy, code compliance..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Approved</label>
+                                <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                <label><input type="checkbox"> ❌ Rejected</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-party">
+                    <h4>⚡ MEP ENGINEER REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>MEP Engineering Comments:</label>
+                            <textarea placeholder="Mechanical, electrical, plumbing coordination, utility connections, energy efficiency..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Approved</label>
+                                <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                <label><input type="checkbox"> ❌ Rejected</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-party">
+                    <h4>🏛️ ARCHITECT REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Architectural Review Comments:</label>
+                            <textarea placeholder="Design intent, aesthetic compliance, material specifications, coordination with other systems..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Approved</label>
+                                <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                <label><input type="checkbox"> ❌ Rejected</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="review-party">
+                    <h4>📋 PROJECT MANAGER FINAL REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Project Management Comments:</label>
+                            <textarea placeholder="Schedule impact, cost implications, overall project coordination, final approval..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Final Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Final Approval - Proceed</label>
+                                <label><input type="checkbox"> ⚠️ Approved with Conditions</label>
+                                <label><input type="checkbox"> ⏸️ Hold - Pending Resolution</label>
+                                <label><input type="checkbox"> ❌ Final Rejection</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reference Key Section -->
+            <div class="reference-key-section">
+                <h4 style="margin: 0 0 16px 0; text-align: center; font-size: 14px; font-weight: 700;">📖 REFERENCE KEY</h4>
+
+                <div class="reference-key-grid">
+                    <div class="ref-section">
+                        <h5>CSI DIVISIONS</h5>
+                        <div style="font-size: 9px; line-height: 1.4;">
+                            <strong>03</strong> - Concrete<br>
+                            <strong>05</strong> - Metals<br>
+                            <strong>06</strong> - Wood, Plastics<br>
+                            <strong>07</strong> - Thermal/Moisture<br>
+                            <strong>08</strong> - Openings<br>
+                            <strong>09</strong> - Finishes<br>
+                            <strong>10</strong> - Specialties<br>
+                            <strong>11</strong> - Equipment<br>
+                            <strong>12</strong> - Furnishings<br>
+                            <strong>13</strong> - Special Construction<br>
+                            <strong>14</strong> - Conveying Equipment<br>
+                            <strong>21</strong> - Fire Suppression<br>
+                            <strong>22</strong> - Plumbing<br>
+                            <strong>23</strong> - HVAC<br>
+                            <strong>26</strong> - Electrical<br>
+                            <strong>27</strong> - Communications<br>
+                            <strong>28</strong> - Electronic Safety
+                        </div>
+                    </div>
+
+                    <div class="ref-section">
+                        <h5>SUBMITTAL TYPES</h5>
+                        <div style="font-size: 9px; line-height: 1.4;">
+                            <strong>SD</strong> - Shop Drawings<br>
+                            <strong>PD</strong> - Product Data<br>
+                            <strong>SM</strong> - Samples<br>
+                            <strong>MM</strong> - Mix Designs<br>
+                            <strong>TE</strong> - Test Reports<br>
+                            <strong>CD</strong> - Certificates<br>
+                            <strong>MS</strong> - Material Safety Data<br>
+                            <strong>WR</strong> - Warranty Information
+                        </div>
+
+                        <h5 style="margin-top: 12px;">PRIORITY LEVELS</h5>
+                        <div style="font-size: 9px; line-height: 1.4;">
+                            <strong>🔴 CRITICAL</strong> - Stop Work<br>
+                            <strong>🟠 HIGH</strong> - Rush Review<br>
+                            <strong>🟡 NORMAL</strong> - Standard<br>
+                            <strong>🟢 LOW</strong> - No Rush
+                        </div>
+                    </div>
+
+                    <div class="ref-section">
+                        <h5>COMMON SPEC SECTIONS</h5>
+                        <div style="font-size: 9px; line-height: 1.4;">
+                            <strong>03 30 00</strong> - Cast-in-Place Concrete<br>
+                            <strong>05 12 00</strong> - Structural Steel<br>
+                            <strong>08 11 00</strong> - Metal Doors<br>
+                            <strong>08 44 00</strong> - Curtain Wall<br>
+                            <strong>09 30 00</strong> - Tiling<br>
+                            <strong>09 91 00</strong> - Painting<br>
+                            <strong>21 13 00</strong> - Fire Sprinklers<br>
+                            <strong>22 11 00</strong> - Water Distribution<br>
+                            <strong>23 31 00</strong> - HVAC Ducts<br>
+                            <strong>23 74 00</strong> - Packaged HVAC<br>
+                            <strong>26 51 00</strong> - Interior Lighting<br>
+                            <strong>27 13 00</strong> - Communications Cabling
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="src/main.ts"></script>
+</body>
+</html>
