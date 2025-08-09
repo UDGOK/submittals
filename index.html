@@ -1404,7 +1404,7 @@
                 <h3 class="section-title">🔍 DETAILED REVIEW & APPROVAL WORKFLOW</h3>
 
                 <div class="review-party">
-                    <h4>👷 CONTRACTOR SUBMITTAL REVIEW</h4>
+                    <h4>CONTRACTOR SUBMITTAL REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>Internal Quality Control Comments:</label>
@@ -1424,7 +1424,7 @@
                 </div>
 
                 <div class="review-party">
-                    <h4>🏗️ STRUCTURAL ENGINEER REVIEW</h4>
+                    <h4>STRUCTURAL ENGINEER REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>Structural Engineering Comments:</label>
@@ -1445,7 +1445,7 @@
                 </div>
 
                 <div class="review-party">
-                    <h4>⚡ MEP ENGINEER REVIEW</h4>
+                    <h4>MEP ENGINEER REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>MEP Engineering Comments:</label>
@@ -1466,7 +1466,7 @@
                 </div>
 
                 <div class="review-party">
-                    <h4>🏛️ ARCHITECT REVIEW</h4>
+                    <h4>ARCHITECT REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>Architectural Review Comments:</label>
@@ -1510,7 +1510,7 @@
 
             <!-- Reference Key Section -->
             <div class="reference-key-section">
-                <h4 style="margin: 0 0 16px 0; text-align: center; font-size: 14px; font-weight: 700;">📖 REFERENCE KEY</h4>
+                <h4 style="margin: 0 0 16px 0; text-align: center; font-size: 14px; font-weight: 700;">REFERENCE KEY</h4>
 
                 <div class="reference-key-grid">
                     <div class="ref-section">
@@ -1779,7 +1779,7 @@
             const workflowHTML = generateApprovalWorkflowHTML(csiDivision);
 
             approvalSection.innerHTML = `
-                <h4 class="submittal-approval-title">🔍 APPROVAL WORKFLOW - UDG-PO-25-XXX-${String(submittalCounter - 1).padStart(3, '0')}</h4>
+                <h4 class="submittal-approval-title">APPROVAL WORKFLOW - UDG-PO-25-XXX-${String(submittalCounter - 1).padStart(3, '0')}</h4>
                 ${workflowHTML}
             `;
 
@@ -1797,7 +1797,7 @@
             // Always start with contractor review
             reviewersHTML += `
                 <div class="review-party">
-                    <h4>👷 CONTRACTOR SUBMITTAL REVIEW</h4>
+                    <h4>CONTRACTOR SUBMITTAL REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>Internal Quality Control Comments:</label>
@@ -1821,7 +1821,7 @@
             if (tradeType === 'STRUCTURAL') {
                 reviewersHTML += `
                     <div class="review-party">
-                        <h4>🏗️ STRUCTURAL ENGINEER REVIEW</h4>
+                        <h4>STRUCTURAL ENGINEER REVIEW</h4>
                         <div class="review-content">
                             <div class="comments-section">
                                 <label>Structural Engineering Comments:</label>
@@ -1844,7 +1844,7 @@
             } else if (tradeType === 'MEP') {
                 reviewersHTML += `
                     <div class="review-party">
-                        <h4>⚡ MEP ENGINEER REVIEW</h4>
+                        <h4>MEP ENGINEER REVIEW</h4>
                         <div class="review-content">
                             <div class="comments-section">
                                 <label>MEP Engineering Comments:</label>
@@ -1868,7 +1868,7 @@
                 // ARCHITECTURAL or other trades get architect review
                 reviewersHTML += `
                     <div class="review-party">
-                        <h4>🏛️ ARCHITECT REVIEW</h4>
+                        <h4>ARCHITECT REVIEW</h4>
                         <div class="review-content">
                             <div class="comments-section">
                                 <label>Architectural Review Comments:</label>
@@ -1893,7 +1893,7 @@
             // Always end with Owner Rep (Project Manager) review
             reviewersHTML += `
                 <div class="review-party">
-                    <h4>👤 OWNER REP FINAL REVIEW</h4>
+                    <h4>OWNER REP FINAL REVIEW</h4>
                     <div class="review-content">
                         <div class="comments-section">
                             <label>Owner Representative Comments:</label>
@@ -1946,7 +1946,7 @@
 
             // Get the current title and preserve it
             const titleElement = existingSection.querySelector('.submittal-approval-title');
-            const currentTitle = titleElement ? titleElement.textContent : `🔍 APPROVAL WORKFLOW - ${submittalId}`;
+            const currentTitle = titleElement ? titleElement.textContent : `APPROVAL WORKFLOW - ${submittalId}`;
 
             // Update the workflow content
             const workflowHTML = generateApprovalWorkflowHTML(csiDivision);
@@ -2012,7 +2012,7 @@
                         const submittalNumber = (submittalNumberInput ? submittalNumberInput.value : '') || `Submittal ${i + 1}`;
                         const description = (descriptionInput ? descriptionInput.value : '') || '';
 
-                        let titleText = `🔍 APPROVAL WORKFLOW - ${submittalNumber.toUpperCase()}`;
+                        let titleText = `APPROVAL WORKFLOW - ${submittalNumber.toUpperCase()}`;
                         if (description) {
                             titleText += ` - ${description.toUpperCase()}`;
                         }
@@ -2402,7 +2402,7 @@
 
                 if (isMultipleMode) {
                     // MULTIPLE SUBMITTALS MODE - COMPREHENSIVE
-                    addSectionHeader('📚 MULTIPLE SUBMITTALS PACKAGE', rgb(0.96, 0.62, 0.05));
+                    addSectionHeader('MULTIPLE SUBMITTALS PACKAGE', rgb(0.96, 0.62, 0.05));
 
                     // Package Information Section
                     addText('Project Information:', leftMargin, yPosition, 11, boldFont);
@@ -2456,7 +2456,7 @@
                     // Submittals Table
                     if (submittalRows.length > 0) {
                         checkPageSpace(120);
-                        addSectionHeader('📋 SUBMITTALS DETAILS', rgb(0.96, 0.62, 0.05));
+                        addSectionHeader('SUBMITTALS DETAILS', rgb(0.96, 0.62, 0.05));
 
                         // Enhanced table headers with better spacing
                         const tableY = yPosition;
@@ -2507,13 +2507,13 @@
                             const submittalTitle = submittal.number || `Submittal ${i + 1}`;
 
                             checkPageSpace(200);
-                            addSectionHeader(`🔍 APPROVAL WORKFLOW - ${submittalTitle.toUpperCase()}`, rgb(0.02, 0.58, 0.41));
+                            addSectionHeader(`APPROVAL WORKFLOW - ${submittalTitle.toUpperCase()}`, rgb(0.02, 0.58, 0.41));
 
                             // Get trade type for conditional workflow
                             const tradeType = getTradeType(submittal.division);
 
                             // Contractor Review
-                            addText('👷 CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                            addText('CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
                             yPosition -= 15;
 
                             addText('Quality Control Comments:', leftMargin, yPosition, 8);
@@ -2521,9 +2521,9 @@
                             yPosition -= 45;
 
                             addText('Submittal Status:', leftMargin, yPosition, 8, boldFont);
-                            addCheckbox(`contractor_ready_${i}`, leftMargin + 100, yPosition - 3, 10, '✅ Ready for Review');
-                            addCheckbox(`contractor_incomplete_${i}`, leftMargin + 230, yPosition - 3, 10, '⚠️ Incomplete - Revise');
-                            addCheckbox(`contractor_withdrawn_${i}`, leftMargin + 370, yPosition - 3, 10, '🚫 Withdrawn');
+                            addCheckbox(`contractor_ready_${i}`, leftMargin + 100, yPosition - 3, 10, 'Ready for Review');
+                            addCheckbox(`contractor_incomplete_${i}`, leftMargin + 230, yPosition - 3, 10, 'Incomplete - Revise');
+                            addCheckbox(`contractor_withdrawn_${i}`, leftMargin + 370, yPosition - 3, 10, 'Withdrawn');
                             yPosition -= 18;
 
                             addText('Signature:', leftMargin, yPosition, 8);
@@ -2534,7 +2534,7 @@
 
                             // Trade-specific reviewer with enhanced details
                             if (tradeType === 'MEP') {
-                                addText('⚡ MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                                addText('MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
                                 yPosition -= 15;
 
                                 addText('MEP Engineering Comments (Mechanical, Electrical, Plumbing coordination):', leftMargin, yPosition, 8);
@@ -2542,10 +2542,10 @@
                                 yPosition -= 45;
 
                                 addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                                addCheckbox(`mep_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                                addCheckbox(`mep_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                                addCheckbox(`mep_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                                addCheckbox(`mep_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                addCheckbox(`mep_approved_${i}`, leftMargin + 80, yPosition - 3, 10, 'Approved');
+                                addCheckbox(`mep_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                                addCheckbox(`mep_revise_${i}`, leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                                addCheckbox(`mep_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, 'Rejected');
                                 yPosition -= 18;
 
                                 addText('Signature:', leftMargin, yPosition, 8);
@@ -2555,7 +2555,7 @@
                                 yPosition -= 25;
 
                             } else if (tradeType === 'STRUCTURAL') {
-                                addText('🏗️ STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                                addText('STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
                                 yPosition -= 15;
 
                                 addText('Structural Engineering Comments (Load calculations, connections, code compliance):', leftMargin, yPosition, 8);
@@ -2563,10 +2563,10 @@
                                 yPosition -= 45;
 
                                 addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                                addCheckbox(`struct_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                                addCheckbox(`struct_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                                addCheckbox(`struct_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                                addCheckbox(`struct_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                addCheckbox(`struct_approved_${i}`, leftMargin + 80, yPosition - 3, 10, 'Approved');
+                                addCheckbox(`struct_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                                addCheckbox(`struct_revise_${i}`, leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                                addCheckbox(`struct_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, 'Rejected');
                                 yPosition -= 18;
 
                                 addText('Signature:', leftMargin, yPosition, 8);
@@ -2576,7 +2576,7 @@
                                 yPosition -= 25;
 
                             } else {
-                                addText('🏛️ ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
+                                addText('ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
                                 yPosition -= 15;
 
                                 addText('Architectural Review Comments (Design intent, aesthetic compliance, coordination):', leftMargin, yPosition, 8);
@@ -2584,10 +2584,10 @@
                                 yPosition -= 45;
 
                                 addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                                addCheckbox(`arch_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                                addCheckbox(`arch_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                                addCheckbox(`arch_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                                addCheckbox(`arch_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                addCheckbox(`arch_approved_${i}`, leftMargin + 80, yPosition - 3, 10, 'Approved');
+                                addCheckbox(`arch_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                                addCheckbox(`arch_revise_${i}`, leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                                addCheckbox(`arch_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, 'Rejected');
                                 yPosition -= 18;
 
                                 addText('Signature:', leftMargin, yPosition, 8);
@@ -2598,7 +2598,7 @@
                             }
 
                             // Owner Rep Final Review
-                            addText('👤 OWNER REP FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                            addText('OWNER REP FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
                             yPosition -= 15;
 
                             addText('Owner Representative Comments (Project coordination, final approval decision):', leftMargin, yPosition, 8);
@@ -2606,11 +2606,11 @@
                             yPosition -= 45;
 
                             addText('Final Status:', leftMargin, yPosition, 8, boldFont);
-                            addCheckbox(`owner_final_approved_${i}`, leftMargin + 70, yPosition - 3, 10, '✅ Final Approval - Proceed');
-                            addCheckbox(`owner_conditions_${i}`, leftMargin + 220, yPosition - 3, 10, '⚠️ Approved with Conditions');
+                            addCheckbox(`owner_final_approved_${i}`, leftMargin + 70, yPosition - 3, 10, 'Final Approval - Proceed');
+                            addCheckbox(`owner_conditions_${i}`, leftMargin + 220, yPosition - 3, 10, 'Approved with Conditions');
                             yPosition -= 15;
-                            addCheckbox(`owner_hold_${i}`, leftMargin + 70, yPosition - 3, 10, '⏸️ Hold - Pending Resolution');
-                            addCheckbox(`owner_rejected_${i}`, leftMargin + 250, yPosition - 3, 10, '❌ Final Rejection');
+                            addCheckbox(`owner_hold_${i}`, leftMargin + 70, yPosition - 3, 10, 'Hold - Pending Resolution');
+                            addCheckbox(`owner_rejected_${i}`, leftMargin + 250, yPosition - 3, 10, 'Final Rejection');
                             yPosition -= 18;
 
                             addText('Signature:', leftMargin, yPosition, 8);
@@ -2623,7 +2623,7 @@
 
                 } else {
                     // SINGLE SUBMITTAL MODE - COMPREHENSIVE
-                    addSectionHeader('📄 SINGLE SUBMITTAL', rgb(0.96, 0.62, 0.05));
+                    addSectionHeader('SINGLE SUBMITTAL', rgb(0.96, 0.62, 0.05));
 
                     // Submittal Number
                     addText('SUBMITTAL NO:', leftMargin, yPosition, 14, boldFont);
@@ -2716,14 +2716,14 @@
 
                     // Single Approval Workflow
                     checkPageSpace(250);
-                    addSectionHeader('🔍 DETAILED REVIEW & APPROVAL WORKFLOW', rgb(0.02, 0.58, 0.41));
+                    addSectionHeader('DETAILED REVIEW & APPROVAL WORKFLOW', rgb(0.02, 0.58, 0.41));
 
                     // Get CSI division from form to determine workflow
                     const selectedDivision = document.getElementById('csiDivision')?.value || '';
                     const tradeType = getTradeType(selectedDivision);
 
                     // Contractor Review
-                    addText('👷 CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                    addText('CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
                     yPosition -= 15;
 
                     addText('Internal Quality Control Comments:', leftMargin, yPosition, 8);
@@ -2731,9 +2731,9 @@
                     yPosition -= 50;
 
                     addText('Submittal Status:', leftMargin, yPosition, 8, boldFont);
-                    addCheckbox('contractor_ready', leftMargin + 100, yPosition - 3, 10, '✅ Ready for Review');
-                    addCheckbox('contractor_incomplete', leftMargin + 230, yPosition - 3, 10, '⚠️ Incomplete - Revise');
-                    addCheckbox('contractor_withdrawn', leftMargin + 370, yPosition - 3, 10, '🚫 Withdrawn');
+                    addCheckbox('contractor_ready', leftMargin + 100, yPosition - 3, 10, 'Ready for Review');
+                    addCheckbox('contractor_incomplete', leftMargin + 230, yPosition - 3, 10, 'Incomplete - Revise');
+                    addCheckbox('contractor_withdrawn', leftMargin + 370, yPosition - 3, 10, 'Withdrawn');
                     yPosition -= 18;
 
                     addText('QC Manager Signature:', leftMargin, yPosition, 8);
@@ -2744,7 +2744,7 @@
 
                     // Trade-specific reviewer
                     if (tradeType === 'MEP') {
-                        addText('⚡ MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                        addText('MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
                         yPosition -= 15;
 
                         addText('MEP Engineering Comments (Mechanical, Electrical, Plumbing coordination, energy efficiency):', leftMargin, yPosition, 8);
@@ -2752,10 +2752,10 @@
                         yPosition -= 50;
 
                         addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                        addCheckbox('mep_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                        addCheckbox('mep_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                        addCheckbox('mep_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                        addCheckbox('mep_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        addCheckbox('mep_approved', leftMargin + 80, yPosition - 3, 10, 'Approved');
+                        addCheckbox('mep_approved_noted', leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                        addCheckbox('mep_revise', leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                        addCheckbox('mep_rejected', leftMargin + 390, yPosition - 3, 10, 'Rejected');
                         yPosition -= 18;
 
                         addText('MEP Engineer Signature:', leftMargin, yPosition, 8);
@@ -2765,7 +2765,7 @@
                         yPosition -= 30;
 
                     } else if (tradeType === 'STRUCTURAL') {
-                        addText('🏗️ STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                        addText('STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
                         yPosition -= 15;
 
                         addText('Structural Engineering Comments (Load calculations, connection details, structural adequacy, code compliance):', leftMargin, yPosition, 8);
@@ -2773,10 +2773,10 @@
                         yPosition -= 50;
 
                         addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                        addCheckbox('structural_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                        addCheckbox('structural_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                        addCheckbox('structural_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                        addCheckbox('structural_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        addCheckbox('structural_approved', leftMargin + 80, yPosition - 3, 10, 'Approved');
+                        addCheckbox('structural_approved_noted', leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                        addCheckbox('structural_revise', leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                        addCheckbox('structural_rejected', leftMargin + 390, yPosition - 3, 10, 'Rejected');
                         yPosition -= 18;
 
                         addText('Structural Engineer Signature:', leftMargin, yPosition, 8);
@@ -2786,7 +2786,7 @@
                         yPosition -= 30;
 
                     } else {
-                        addText('🏛️ ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
+                        addText('ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
                         yPosition -= 15;
 
                         addText('Architectural Review Comments (Design intent, aesthetic compliance, material specifications, coordination):', leftMargin, yPosition, 8);
@@ -2794,10 +2794,10 @@
                         yPosition -= 50;
 
                         addText('Review Status:', leftMargin, yPosition, 8, boldFont);
-                        addCheckbox('architect_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
-                        addCheckbox('architect_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
-                        addCheckbox('architect_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
-                        addCheckbox('architect_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        addCheckbox('architect_approved', leftMargin + 80, yPosition - 3, 10, 'Approved');
+                        addCheckbox('architect_approved_noted', leftMargin + 150, yPosition - 3, 10, 'Approved as Noted');
+                        addCheckbox('architect_revise', leftMargin + 270, yPosition - 3, 10, 'Revise & Resubmit');
+                        addCheckbox('architect_rejected', leftMargin + 390, yPosition - 3, 10, 'Rejected');
                         yPosition -= 18;
 
                         addText('Architect Signature:', leftMargin, yPosition, 8);
@@ -2808,7 +2808,7 @@
                     }
 
                     // Project Manager Final Review
-                    addText('📋 PROJECT MANAGER FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                    addText('PROJECT MANAGER FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
                     yPosition -= 15;
 
                     addText('Project Management Comments (Schedule impact, cost implications, overall project coordination):', leftMargin, yPosition, 8);
@@ -2816,11 +2816,11 @@
                     yPosition -= 50;
 
                     addText('Final Status:', leftMargin, yPosition, 8, boldFont);
-                    addCheckbox('pm_final_approved', leftMargin + 70, yPosition - 3, 10, '✅ Final Approval - Proceed');
-                    addCheckbox('pm_conditions', leftMargin + 220, yPosition - 3, 10, '⚠️ Approved with Conditions');
+                    addCheckbox('pm_final_approved', leftMargin + 70, yPosition - 3, 10, 'Final Approval - Proceed');
+                    addCheckbox('pm_conditions', leftMargin + 220, yPosition - 3, 10, 'Approved with Conditions');
                     yPosition -= 15;
-                    addCheckbox('pm_hold', leftMargin + 70, yPosition - 3, 10, '⏸️ Hold - Pending Resolution');
-                    addCheckbox('pm_rejected', leftMargin + 250, yPosition - 3, 10, '❌ Final Rejection');
+                    addCheckbox('pm_hold', leftMargin + 70, yPosition - 3, 10, 'Hold - Pending Resolution');
+                    addCheckbox('pm_rejected', leftMargin + 250, yPosition - 3, 10, 'Final Rejection');
                     yPosition -= 18;
 
                     addText('Project Manager Signature:', leftMargin, yPosition, 8);
@@ -2832,7 +2832,7 @@
 
                 // File Attachments Section
                 checkPageSpace(80);
-                addSectionHeader('📎 SUBMITTAL ATTACHMENTS', rgb(0.96, 0.62, 0.05));
+                addSectionHeader('SUBMITTAL ATTACHMENTS', rgb(0.96, 0.62, 0.05));
 
                 if (attachedFiles.length > 0) {
                     addText('Attached Files:', leftMargin, yPosition, 9, boldFont);
@@ -2860,7 +2860,7 @@
 
                 // Reference Key Section
                 checkPageSpace(120);
-                addSectionHeader('📖 REFERENCE KEY', rgb(0.4, 0.4, 0.4));
+                addSectionHeader('REFERENCE KEY', rgb(0.4, 0.4, 0.4));
 
                 // CSI Divisions Reference
                 addText('CSI DIVISIONS:', leftMargin, yPosition, 9, boldFont);
