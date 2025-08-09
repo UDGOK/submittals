@@ -2397,7 +2397,11 @@
 
                 addText('UPSCALE DEVELOPMENT GROUP', leftMargin, yPosition, 22, boldFont, rgb(1, 1, 1));
                 yPosition -= 25;
-                addText('CLIENT: PARADIGM ORAL | CONSTRUCTION SUBMITTAL', leftMargin, yPosition, 14, font, rgb(0.9, 0.9, 0.9));
+
+                // Fillable client field in header
+                addText('CLIENT:', leftMargin, yPosition, 14, font, rgb(0.9, 0.9, 0.9));
+                addTextField('client_name', leftMargin + 60, yPosition - 3, 180, fieldHeight, 'PARADIGM ORAL');
+                addText('| CONSTRUCTION SUBMITTAL', leftMargin + 270, yPosition, 14, font, rgb(0.9, 0.9, 0.9));
                 yPosition -= 50;
 
                 if (isMultipleMode) {
@@ -2409,7 +2413,7 @@
                     yPosition -= 18;
 
                     addText('Project Name:', leftMargin, yPosition, 9);
-                    addTextField('project_name', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                    addTextField('project_name', leftMargin + 90, yPosition - 3, 180, fieldHeight,
                         document.getElementById('projectName')?.value || '');
 
                     addText('Package Date:', leftMargin + 320, yPosition, 9);
@@ -2431,7 +2435,7 @@
                     yPosition -= 18;
 
                     addText('Company Name:', leftMargin, yPosition, 9);
-                    addTextField('contractor_company', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                    addTextField('contractor_company', leftMargin + 90, yPosition - 3, 180, fieldHeight,
                         document.getElementById('contractorName')?.value || '');
 
                     addText('Contact Person:', leftMargin + 320, yPosition, 9);
@@ -2440,7 +2444,7 @@
                     yPosition -= 22;
 
                     addText('Email Address:', leftMargin, yPosition, 9);
-                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 250, fieldHeight,
+                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 220, fieldHeight,
                         document.getElementById('contactEmail')?.value || '');
                     yPosition -= 30;
 
@@ -2627,11 +2631,13 @@
 
                     // Submittal Number
                     addText('SUBMITTAL NO:', leftMargin, yPosition, 14, boldFont);
-                    addTextField('submittal_prefix', leftMargin + 120, yPosition - 5, 100, fieldHeight, 'UDG-PO-25-');
-                    addTextField('division_number', leftMargin + 225, yPosition - 5, 40, fieldHeight,
+                    addText('UDG-', leftMargin + 120, yPosition, 14, boldFont);
+                    addTextField('project_code', leftMargin + 150, yPosition - 3, 30, fieldHeight, 'PO');
+                    addText('-25-', leftMargin + 185, yPosition, 14, boldFont);
+                    addTextField('division_number', leftMargin + 220, yPosition - 3, 40, fieldHeight,
                         document.getElementById('divisionNumber')?.value || 'XXX');
-                    addText('-', leftMargin + 270, yPosition, 14, boldFont);
-                    addTextField('sequence_number', leftMargin + 280, yPosition - 5, 50, fieldHeight,
+                    addText('-', leftMargin + 265, yPosition, 14, boldFont);
+                    addTextField('sequence_number', leftMargin + 275, yPosition - 3, 50, fieldHeight,
                         document.getElementById('sequenceNumber')?.value || '000');
                     yPosition -= 35;
 
@@ -2640,7 +2646,7 @@
                     yPosition -= 18;
 
                     addText('Project Name:', leftMargin, yPosition, 9);
-                    addTextField('project_name', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                    addTextField('project_name', leftMargin + 90, yPosition - 3, 180, fieldHeight,
                         document.getElementById('projectName')?.value || '');
 
                     addText('CSI Division:', leftMargin + 320, yPosition, 9);
@@ -2692,7 +2698,7 @@
                     yPosition -= 18;
 
                     addText('Company Name:', leftMargin, yPosition, 9);
-                    addTextField('contractor_company', leftMargin + 100, yPosition - 3, 200, fieldHeight,
+                    addTextField('contractor_company', leftMargin + 100, yPosition - 3, 180, fieldHeight,
                         document.getElementById('contractorName')?.value || '');
 
                     addText('Contact Person:', leftMargin + 320, yPosition, 9);
@@ -2701,7 +2707,7 @@
                     yPosition -= 22;
 
                     addText('Email Address:', leftMargin, yPosition, 9);
-                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 250, fieldHeight,
+                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 220, fieldHeight,
                         document.getElementById('contactEmail')?.value || '');
                     yPosition -= 30;
 
