@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UDG Construction Submittal Template</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
         /* Base Styles - Professional & Minimalistic */
         * {
@@ -1176,7 +1177,10 @@
     </style>
 </head>
 <body>
-    <button class="print-button" onclick="window.print()">🖨️ PRINT TO PDF</button>
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000;">
+        <button class="print-button" onclick="window.print()" style="margin-bottom: 10px; display: block; width: 180px;">🖨️ PRINT TO PDF</button>
+        <button class="print-button" onclick="generateFillablePDF()" style="display: block; width: 180px; background: #059669;">📝 FILLABLE PDF</button>
+    </div>
 
     <div class="container">
         <div class="header">
@@ -1210,7 +1214,7 @@
                         <h4 class="section-title">Project Information</h4>
                         <div class="field">
                             <label>Project Name</label>
-                            <input type="text" value="Paradigm Oral Facility" id="projectName">
+                            <input type="text" placeholder="Enter project name" id="projectName">
                         </div>
                         <div class="field">
                             <label>Submittal Date</label>
@@ -1576,6 +1580,1409 @@
         </div>
     </div>
 
-    <script src="src/main.ts"></script>
+    <script>
+        // Construction Submittal Template - JavaScript Implementation
+        let attachedFiles = [];
+        let submittalCounter = 1;
+
+        // Trade type mappings for conditional approval workflows
+        const TRADE_TYPES = {
+            MEP: ['21', '22', '23', '26', '27', '28'], // Fire, Plumbing, HVAC, Electrical, Communications, Electronic Safety
+            STRUCTURAL: ['03', '05'], // Concrete, Metals
+            ARCHITECTURAL: ['06', '07', '08', '09', '10', '11', '12', '13', '14'] // Wood, Thermal, Openings, Finishes, etc.
+        };
+
+        // Determine trade type based on CSI division
+        function getTradeType(csiDivision) {
+            if (TRADE_TYPES.MEP.includes(csiDivision)) return 'MEP';
+            if (TRADE_TYPES.STRUCTURAL.includes(csiDivision)) return 'STRUCTURAL';
+            if (TRADE_TYPES.ARCHITECTURAL.includes(csiDivision)) return 'ARCHITECTURAL';
+            return 'ARCHITECTURAL'; // Default to architectural for other divisions
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+            setDefaultDates();
+            setupMutuallyExclusiveCheckboxes();
+            updateSingleModeApprovalWorkflow(); // Initialize single mode workflow
+
+            // Auto-add first row when switching to multiple mode
+            setTimeout(function() {
+                const tbody = document.getElementById('submittalsTableBody');
+                if (tbody && tbody.children.length === 0) {
+                    addSubmittalRow();
+                }
+            }, 100);
+        });
+
+        // Mode switching functionality
+        function switchMode(mode) {
+            const singleBtn = document.getElementById('singleModeBtn');
+            const multipleBtn = document.getElementById('multipleModeBtn');
+            const singleMode = document.getElementById('singleSubmittalMode');
+            const multipleMode = document.getElementById('multipleSubmittalsMode');
+            const enhancedApproval = document.getElementById('enhancedApprovalSection');
+
+            if (mode === 'single') {
+                if (singleBtn) singleBtn.classList.add('active');
+                if (multipleBtn) multipleBtn.classList.remove('active');
+                if (singleMode) singleMode.style.display = 'block';
+                if (multipleMode) {
+                    multipleMode.style.display = 'none';
+                    multipleMode.classList.remove('active');
+                }
+                if (enhancedApproval) enhancedApproval.style.display = 'block';
+            } else {
+                if (singleBtn) singleBtn.classList.remove('active');
+                if (multipleBtn) multipleBtn.classList.add('active');
+                if (singleMode) singleMode.style.display = 'none';
+                if (multipleMode) {
+                    multipleMode.style.display = 'block';
+                    multipleMode.classList.add('active');
+                }
+                if (enhancedApproval) enhancedApproval.style.display = 'none';
+
+                // Make sure individual approval sections are visible for existing submittals
+                setTimeout(function() {
+                    const existingRows = document.querySelectorAll('#submittalsTableBody tr');
+                    if (existingRows.length > 0) {
+                        for (let i = 0; i < existingRows.length; i++) {
+                            const row = existingRows[i];
+                            const submittalId = row.getAttribute('data-id');
+                            if (submittalId) {
+                                const container = document.getElementById('individualApprovalsContainer');
+                                const existingSection = container ? container.querySelector(`[data-submittal-id="${submittalId}"]`) : null;
+                                if (!existingSection) {
+                                    const divisionSelect = row.querySelector('[data-field="division"]');
+                                    const selectedDivision = divisionSelect ? divisionSelect.value : '';
+                                    createIndividualApprovalSection(submittalId, selectedDivision);
+                                }
+                            }
+                        }
+                        updateSubmittalApprovalTitles();
+                    }
+                }, 100);
+            }
+        }
+
+        // Multiple submittals functionality
+        function addSubmittalRow() {
+            const tbody = document.getElementById('submittalsTableBody');
+            if (!tbody) return;
+
+            const row = document.createElement('tr');
+            const submittalId = 'submittal_' + Date.now();
+
+            row.innerHTML = `
+                <td><input type="text" placeholder="UDG-PO-25-XXX-${String(submittalCounter).padStart(3, '0')}" data-field="number"></td>
+                <td><input type="text" placeholder="Description" data-field="description"></td>
+                <td>
+                    <select data-field="division">
+                        <option value="">Select</option>
+                        <option value="03">03-Concrete</option>
+                        <option value="05">05-Metals</option>
+                        <option value="06">06-Wood</option>
+                        <option value="07">07-Thermal</option>
+                        <option value="08">08-Openings</option>
+                        <option value="09">09-Finishes</option>
+                        <option value="10">10-Specialties</option>
+                        <option value="11">11-Equipment</option>
+                        <option value="21">21-Fire</option>
+                        <option value="22">22-Plumbing</option>
+                        <option value="23">23-HVAC</option>
+                        <option value="26">26-Electrical</option>
+                    </select>
+                </td>
+                <td>
+                    <select data-field="type">
+                        <option value="">Type</option>
+                        <option value="SD">SD</option>
+                        <option value="PD">PD</option>
+                        <option value="SM">SM</option>
+                        <option value="MM">MM</option>
+                        <option value="TE">TE</option>
+                        <option value="CD">CD</option>
+                    </select>
+                </td>
+                <td class="priority-cell">
+                    <select data-field="priority">
+                        <option value="">Priority</option>
+                        <option value="CRITICAL">🔴 CRIT</option>
+                        <option value="HIGH">🟠 HIGH</option>
+                        <option value="NORMAL">🟡 NORM</option>
+                        <option value="LOW">🟢 LOW</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="Spec Section" data-field="spec"></td>
+                <td>
+                    <select data-field="revision">
+                        <option value="00">00</option>
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                    </select>
+                </td>
+                <td class="actions-cell">
+                    <button class="remove-submittal" onclick="removeSubmittalRow(this)">×</button>
+                </td>
+            `;
+
+            row.setAttribute('data-id', submittalId);
+            tbody.appendChild(row);
+            submittalCounter++;
+
+            // Create individual approval section for this submittal
+            const divisionSelect = row.querySelector('[data-field="division"]');
+            const selectedDivision = divisionSelect ? divisionSelect.value : '';
+            createIndividualApprovalSection(submittalId, selectedDivision);
+
+            // Add event listeners to update approval titles and workflows
+            const numberInput = row.querySelector('[data-field="number"]');
+            const descriptionInput = row.querySelector('[data-field="description"]');
+
+            if (numberInput) {
+                numberInput.addEventListener('input', updateSubmittalApprovalTitles);
+            }
+            if (descriptionInput) {
+                descriptionInput.addEventListener('input', updateSubmittalApprovalTitles);
+            }
+            if (divisionSelect) {
+                divisionSelect.addEventListener('change', function() {
+                    // Update the approval workflow for this specific submittal
+                    updateIndividualApprovalWorkflow(submittalId, this.value);
+                });
+            }
+        }
+
+        function removeSubmittalRow(button) {
+            const row = button.closest('tr');
+            if (row) {
+                const submittalId = row.getAttribute('data-id');
+                row.remove();
+
+                // Remove corresponding approval section
+                if (submittalId) {
+                    removeIndividualApprovalSection(submittalId);
+                }
+            }
+        }
+
+        function createIndividualApprovalSection(submittalId, csiDivision) {
+            const container = document.getElementById('individualApprovalsContainer');
+            if (!container) return;
+
+            const approvalSection = document.createElement('div');
+            approvalSection.className = 'individual-approval-section';
+            approvalSection.setAttribute('data-submittal-id', submittalId);
+
+            const workflowHTML = generateApprovalWorkflowHTML(csiDivision);
+
+            approvalSection.innerHTML = `
+                <h4 class="submittal-approval-title">🔍 APPROVAL WORKFLOW - UDG-PO-25-XXX-${String(submittalCounter - 1).padStart(3, '0')}</h4>
+                ${workflowHTML}
+            `;
+
+            container.appendChild(approvalSection);
+
+            // Setup mutually exclusive checkboxes for this new section
+            setupMutuallyExclusiveCheckboxesForSection(approvalSection);
+        }
+
+        // Generate conditional approval workflow HTML based on CSI division
+        function generateApprovalWorkflowHTML(csiDivision) {
+            const tradeType = getTradeType(csiDivision);
+            let reviewersHTML = '';
+
+            // Always start with contractor review
+            reviewersHTML += `
+                <div class="review-party">
+                    <h4>👷 CONTRACTOR SUBMITTAL REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Internal Quality Control Comments:</label>
+                            <textarea placeholder="QC Manager review comments, completeness check, compliance verification..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Submittal Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Ready for Review</label>
+                                <label><input type="checkbox"> ⚠️ Incomplete - Revise</label>
+                                <label><input type="checkbox"> 🚫 Withdrawn</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add trade-specific reviewers
+            if (tradeType === 'STRUCTURAL') {
+                reviewersHTML += `
+                    <div class="review-party">
+                        <h4>🏗️ STRUCTURAL ENGINEER REVIEW</h4>
+                        <div class="review-content">
+                            <div class="comments-section">
+                                <label>Structural Engineering Comments:</label>
+                                <textarea placeholder="Load calculations, connection details, structural adequacy, code compliance..."></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                                <div class="status-checkboxes">
+                                    <label><input type="checkbox"> ✅ Approved</label>
+                                    <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                    <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                    <label><input type="checkbox"> ❌ Rejected</label>
+                                </div>
+                                <div class="signature-field"></div>
+                                <input type="date" class="date-field">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (tradeType === 'MEP') {
+                reviewersHTML += `
+                    <div class="review-party">
+                        <h4>⚡ MEP ENGINEER REVIEW</h4>
+                        <div class="review-content">
+                            <div class="comments-section">
+                                <label>MEP Engineering Comments:</label>
+                                <textarea placeholder="Mechanical, electrical, plumbing coordination, utility connections, energy efficiency..."></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                                <div class="status-checkboxes">
+                                    <label><input type="checkbox"> ✅ Approved</label>
+                                    <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                    <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                    <label><input type="checkbox"> ❌ Rejected</label>
+                                </div>
+                                <div class="signature-field"></div>
+                                <input type="date" class="date-field">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // ARCHITECTURAL or other trades get architect review
+                reviewersHTML += `
+                    <div class="review-party">
+                        <h4>🏛️ ARCHITECT REVIEW</h4>
+                        <div class="review-content">
+                            <div class="comments-section">
+                                <label>Architectural Review Comments:</label>
+                                <textarea placeholder="Design intent, aesthetic compliance, material specifications, coordination with other systems..."></textarea>
+                            </div>
+                            <div>
+                                <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Review Status:</label>
+                                <div class="status-checkboxes">
+                                    <label><input type="checkbox"> ✅ Approved</label>
+                                    <label><input type="checkbox"> ⚠️ Approved as Noted</label>
+                                    <label><input type="checkbox"> 🔄 Revise & Resubmit</label>
+                                    <label><input type="checkbox"> ❌ Rejected</label>
+                                </div>
+                                <div class="signature-field"></div>
+                                <input type="date" class="date-field">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Always end with Owner Rep (Project Manager) review
+            reviewersHTML += `
+                <div class="review-party">
+                    <h4>👤 OWNER REP FINAL REVIEW</h4>
+                    <div class="review-content">
+                        <div class="comments-section">
+                            <label>Owner Representative Comments:</label>
+                            <textarea placeholder="Project coordination, compliance with requirements, final approval decision..."></textarea>
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; text-transform: uppercase; color: #1e293b; margin-bottom: 8px; font-weight: 600;">Final Status:</label>
+                            <div class="status-checkboxes">
+                                <label><input type="checkbox"> ✅ Final Approval - Proceed</label>
+                                <label><input type="checkbox"> ⚠️ Approved with Conditions</label>
+                                <label><input type="checkbox"> ⏸️ Hold - Pending Resolution</label>
+                                <label><input type="checkbox"> ❌ Final Rejection</label>
+                            </div>
+                            <div class="signature-field"></div>
+                            <input type="date" class="date-field">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            return reviewersHTML;
+        }
+
+        // Update single mode approval workflow based on CSI division
+        function updateSingleModeApprovalWorkflow() {
+            const csiDivision = document.getElementById('csiDivision');
+            const enhancedApprovalSection = document.getElementById('enhancedApprovalSection');
+
+            if (!enhancedApprovalSection) return;
+
+            const selectedDivision = csiDivision ? csiDivision.value : '';
+            const workflowHTML = generateApprovalWorkflowHTML(selectedDivision);
+
+            enhancedApprovalSection.innerHTML = `
+                <h3 class="section-title">🔍 DETAILED REVIEW & APPROVAL WORKFLOW</h3>
+                ${workflowHTML}
+            `;
+
+            // Setup mutually exclusive checkboxes for the updated section
+            setupMutuallyExclusiveCheckboxesForSection(enhancedApprovalSection);
+        }
+
+        // Update individual approval workflow for a specific submittal in multiple mode
+        function updateIndividualApprovalWorkflow(submittalId, csiDivision) {
+            const container = document.getElementById('individualApprovalsContainer');
+            if (!container) return;
+
+            const existingSection = container.querySelector(`[data-submittal-id="${submittalId}"]`);
+            if (!existingSection) return;
+
+            // Get the current title and preserve it
+            const titleElement = existingSection.querySelector('.submittal-approval-title');
+            const currentTitle = titleElement ? titleElement.textContent : `🔍 APPROVAL WORKFLOW - ${submittalId}`;
+
+            // Update the workflow content
+            const workflowHTML = generateApprovalWorkflowHTML(csiDivision);
+            existingSection.innerHTML = `
+                <h4 class="submittal-approval-title">${currentTitle}</h4>
+                ${workflowHTML}
+            `;
+
+            // Setup mutually exclusive checkboxes for the updated section
+            setupMutuallyExclusiveCheckboxesForSection(existingSection);
+        }
+
+        function removeIndividualApprovalSection(submittalId) {
+            const container = document.getElementById('individualApprovalsContainer');
+            if (!container) return;
+
+            const approvalSection = container.querySelector(`[data-submittal-id="${submittalId}"]`);
+            if (approvalSection) {
+                approvalSection.remove();
+            }
+        }
+
+        function setupMutuallyExclusiveCheckboxesForSection(section) {
+            const checkboxGroups = section.querySelectorAll('.status-checkboxes');
+
+            for (let i = 0; i < checkboxGroups.length; i++) {
+                const group = checkboxGroups[i];
+                const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+
+                for (let j = 0; j < checkboxes.length; j++) {
+                    const checkbox = checkboxes[j];
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            // Uncheck all other checkboxes in this group
+                            for (let k = 0; k < checkboxes.length; k++) {
+                                const otherCheckbox = checkboxes[k];
+                                if (otherCheckbox !== this) {
+                                    otherCheckbox.checked = false;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        function updateSubmittalApprovalTitles() {
+            const container = document.getElementById('individualApprovalsContainer');
+            if (!container) return;
+
+            const approvalSections = container.querySelectorAll('.individual-approval-section');
+            for (let i = 0; i < approvalSections.length; i++) {
+                const section = approvalSections[i];
+                const title = section.querySelector('.submittal-approval-title');
+                if (title) {
+                    // Get the corresponding table row to extract submittal info
+                    const tableRows = document.querySelectorAll('#submittalsTableBody tr');
+                    const tableRow = tableRows[i];
+                    if (tableRow) {
+                        const submittalNumberInput = tableRow.querySelector('[data-field="number"]');
+                        const descriptionInput = tableRow.querySelector('[data-field="description"]');
+
+                        const submittalNumber = (submittalNumberInput ? submittalNumberInput.value : '') || `Submittal ${i + 1}`;
+                        const description = (descriptionInput ? descriptionInput.value : '') || '';
+
+                        let titleText = `🔍 APPROVAL WORKFLOW - ${submittalNumber.toUpperCase()}`;
+                        if (description) {
+                            titleText += ` - ${description.toUpperCase()}`;
+                        }
+                        title.textContent = titleText;
+                    }
+                }
+            }
+        }
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // CSI Division change handler
+            const csiDivision = document.getElementById('csiDivision');
+            if (csiDivision) {
+                csiDivision.addEventListener('change', function() {
+                    updateSubmittalNumber();
+                    updateSingleModeApprovalWorkflow();
+                });
+            }
+
+            // File input handler
+            const fileInput = document.getElementById('fileInput');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFiles);
+            }
+
+            // Print preparation
+            window.addEventListener('beforeprint', function() {
+                const inputs = document.querySelectorAll('input, select, textarea');
+                for (let i = 0; i < inputs.length; i++) {
+                    const input = inputs[i];
+                    if (input.type === 'text' || input.type === 'email' || input.type === 'date' || input.tagName === 'SELECT' || input.tagName === 'TEXTAREA') {
+                        input.setAttribute('value', input.value);
+                    }
+                }
+            });
+        }
+
+        // Auto-update submittal number for single mode
+        function updateSubmittalNumber() {
+            const csiDivision = document.getElementById('csiDivision');
+            const divisionNumber = document.getElementById('divisionNumber');
+
+            if (csiDivision && csiDivision.value && divisionNumber) {
+                divisionNumber.value = csiDivision.value;
+            }
+        }
+
+        // Set default dates - removed auto-population to let users fill manually
+        function setDefaultDates() {
+            // No longer auto-populating dates - let users fill them manually
+        }
+
+        // File handling functionality
+        function handleFiles(e) {
+            const input = e.target;
+            if (!input.files) return;
+
+            const files = Array.from(input.files);
+            for (let i = 0; i < files.length; i++) {
+                addFile(files[i]);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            if (e.currentTarget) {
+                e.currentTarget.classList.add('dragover');
+            }
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            if (e.currentTarget) {
+                e.currentTarget.classList.remove('dragover');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (e.currentTarget) {
+                e.currentTarget.classList.remove('dragover');
+            }
+            if (!e.dataTransfer) return;
+
+            const files = Array.from(e.dataTransfer.files);
+            for (let i = 0; i < files.length; i++) {
+                addFile(files[i]);
+            }
+        }
+
+        function addFile(file) {
+            if (file.size > 10 * 1024 * 1024) {
+                alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                return;
+            }
+
+            const fileObj = {
+                id: Date.now() + Math.random().toString(),
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                lastModified: file.lastModified,
+                file: file
+            };
+
+            attachedFiles.push(fileObj);
+            renderFileList();
+        }
+
+        function removeFile(fileId) {
+            attachedFiles = attachedFiles.filter(function(f) { return f.id !== fileId; });
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const fileList = document.getElementById('fileList');
+            if (!fileList) return;
+
+            if (attachedFiles.length === 0) {
+                fileList.innerHTML = '';
+                return;
+            }
+
+            fileList.innerHTML = attachedFiles.map(function(file) {
+                const icon = getFileIcon(file.name);
+                const size = formatFileSize(file.size);
+                const date = new Date(file.lastModified).toLocaleDateString();
+
+                let preview = '';
+                if (file.type.startsWith('image/')) {
+                    const url = URL.createObjectURL(file.file);
+                    preview = `<img src="${url}" style="max-width: 60px; max-height: 40px; margin-right: 12px; border-radius: 4px; object-fit: cover;" alt="${file.name}">`;
+                }
+
+                return `
+                    <div class="file-item">
+                        ${preview}
+                        <span style="font-size: 24px; margin-right: 12px; min-width: 24px;">${icon}</span>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-details">${size} • Modified: ${date}</div>
+                        </div>
+                        <button class="file-remove" onclick="removeFile('${file.id}')">Remove</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase() || '';
+            const icons = {
+                'pdf': '📄', 'dwg': '📐', 'dxf': '📐', 'doc': '📝', 'docx': '📝',
+                'xls': '📊', 'xlsx': '📊', 'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️',
+                'gif': '🖼️', 'zip': '🗜️', 'rar': '🗜️', '7z': '🗜️'
+            };
+            return icons[ext] || '📋';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Checkbox logic to ensure only one option is selected per group
+        function setupMutuallyExclusiveCheckboxes() {
+            const checkboxGroups = document.querySelectorAll('.status-checkboxes');
+
+            for (let i = 0; i < checkboxGroups.length; i++) {
+                const group = checkboxGroups[i];
+                const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+
+                for (let j = 0; j < checkboxes.length; j++) {
+                    const checkbox = checkboxes[j];
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked) {
+                            // Uncheck all other checkboxes in this group
+                            for (let k = 0; k < checkboxes.length; k++) {
+                                const otherCheckbox = checkboxes[k];
+                                if (otherCheckbox !== this) {
+                                    otherCheckbox.checked = false;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // Generate fillable PDF with form fields
+        // Generate fillable PDF with form fields for single or multiple submittals
+        async function generateFillablePDF() {
+            try {
+                const { PDFDocument, PDFForm, PDFTextField, PDFDropdown, PDFCheckBox, StandardFonts, rgb } = PDFLib;
+
+                // Check if we are in multiple submittal mode
+                const multipleMode = document.getElementById("multipleSubmittalsMode");
+                const isMultipleMode = multipleMode && multipleMode.style.display !== "none" && multipleMode.classList.contains("active");
+
+                // Get submittal data if in multiple mode
+                let submittalRows = [];
+                if (isMultipleMode) {
+                    const tableRows = document.querySelectorAll("#submittalsTableBody tr");
+                    for (let i = 0; i < tableRows.length; i++) {
+                        const row = tableRows[i];
+                        const submittalData = {
+                            number: row.querySelector("[data-field=number]")?.value || "",
+                            description: row.querySelector("[data-field=description]")?.value || "",
+                            division: row.querySelector("[data-field=division]")?.value || "",
+                            type: row.querySelector("[data-field=type]")?.value || "",
+                            priority: row.querySelector("[data-field=priority]")?.value || "",
+                            spec: row.querySelector("[data-field=spec]")?.value || "",
+                            revision: row.querySelector("[data-field=revision]")?.value || ""
+                        };
+                        submittalRows.push(submittalData);
+                    }
+                }
+
+                alert("Generating " + (isMultipleMode ? "multiple submittals" : "single submittal") + " PDF...");
+
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                alert("Error generating PDF: " + error.message);
+            }
+        }
+
+        // Generate comprehensive fillable PDF with complete form mapping
+        async function generateFillablePDF() {
+            try {
+                const { PDFDocument, StandardFonts, rgb } = PDFLib;
+
+                // Check if we're in multiple submittal mode
+                const multipleMode = document.getElementById('multipleSubmittalsMode');
+                const isMultipleMode = multipleMode && multipleMode.style.display !== 'none' && multipleMode.classList.contains('active');
+
+                // Get submittal data if in multiple mode
+                let submittalRows = [];
+                if (isMultipleMode) {
+                    const tableRows = document.querySelectorAll('#submittalsTableBody tr');
+                    for (let i = 0; i < tableRows.length; i++) {
+                        const row = tableRows[i];
+                        const submittalData = {
+                            number: row.querySelector('[data-field="number"]')?.value || '',
+                            description: row.querySelector('[data-field="description"]')?.value || '',
+                            division: row.querySelector('[data-field="division"]')?.value || '',
+                            type: row.querySelector('[data-field="type"]')?.value || '',
+                            priority: row.querySelector('[data-field="priority"]')?.value || '',
+                            spec: row.querySelector('[data-field="spec"]')?.value || '',
+                            revision: row.querySelector('[data-field="revision"]')?.value || ''
+                        };
+                        submittalRows.push(submittalData);
+                    }
+                }
+
+                const pdfDoc = await PDFDocument.create();
+                const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+                const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+                let currentPage = pdfDoc.addPage([612, 792]);
+                let { width, height } = currentPage.getSize();
+                let yPosition = height - 40;
+                const leftMargin = 50;
+                const rightMargin = width - 50;
+                const fieldHeight = 16;
+                const smallFieldHeight = 14;
+
+                // Helper functions for better PDF layout
+                function addText(text, x, y, size = 12, fontType = font, color = rgb(0, 0, 0)) {
+                    currentPage.drawText(text, { x, y, size, font: fontType, color });
+                }
+
+                function addTextField(name, x, y, width, height, placeholder = '', multiline = false) {
+                    const form = pdfDoc.getForm();
+                    const textField = form.createTextField(name);
+                    textField.addToPage(currentPage, { x, y, width, height });
+                    textField.setFontSize(multiline ? 8 : 9);
+                    if (multiline) textField.enableMultiline();
+                    if (placeholder) textField.setText(placeholder);
+
+                    // Add border
+                    currentPage.drawRectangle({
+                        x: x - 1,
+                        y: y - 1,
+                        width: width + 2,
+                        height: height + 2,
+                        borderColor: rgb(0.7, 0.7, 0.7),
+                        borderWidth: 0.5,
+                    });
+
+                    return textField;
+                }
+
+                function addDropdown(name, x, y, width, height, options) {
+                    const form = pdfDoc.getForm();
+                    const dropdown = form.createDropdown(name);
+                    dropdown.addToPage(currentPage, { x, y, width, height });
+                    dropdown.addOptions(options);
+                    dropdown.setFontSize(9);
+
+                    // Add border
+                    currentPage.drawRectangle({
+                        x: x - 1,
+                        y: y - 1,
+                        width: width + 2,
+                        height: height + 2,
+                        borderColor: rgb(0.7, 0.7, 0.7),
+                        borderWidth: 0.5,
+                    });
+
+                    return dropdown;
+                }
+
+                function addCheckbox(name, x, y, size = 12, label = '') {
+                    const form = pdfDoc.getForm();
+                    const checkbox = form.createCheckBox(name);
+                    checkbox.addToPage(currentPage, { x, y, width: size, height: size });
+
+                    // Add label next to checkbox
+                    if (label) {
+                        addText(label, x + size + 5, y + 2, 8);
+                    }
+
+                    return checkbox;
+                }
+
+                function addSectionHeader(title, color = rgb(0.06, 0.14, 0.24)) {
+                    checkPageSpace(30);
+
+                    // Background bar
+                    currentPage.drawRectangle({
+                        x: leftMargin - 5,
+                        y: yPosition - 20,
+                        width: width - 100,
+                        height: 18,
+                        color: color,
+                    });
+
+                    addText(title, leftMargin, yPosition - 12, 12, boldFont, rgb(1, 1, 1));
+                    yPosition -= 30;
+                }
+
+                function checkPageSpace(needed) {
+                    if (yPosition - needed < 60) {
+                        currentPage = pdfDoc.addPage([612, 792]);
+                        yPosition = height - 40;
+                        return true;
+                    }
+                    return false;
+                }
+
+                function drawSignatureLine(x, y, width) {
+                    currentPage.drawLine({
+                        start: { x: x, y: y },
+                        end: { x: x + width, y: y },
+                        thickness: 1,
+                        color: rgb(0, 0, 0),
+                    });
+                }
+
+                // PROFESSIONAL HEADER WITH BRANDING
+                currentPage.drawRectangle({
+                    x: 0,
+                    y: height - 100,
+                    width: width,
+                    height: 100,
+                    color: rgb(0.06, 0.14, 0.24), // Dark blue
+                });
+
+                // Gradient effect simulation with rectangles
+                for (let i = 0; i < 4; i++) {
+                    currentPage.drawRectangle({
+                        x: 0,
+                        y: height - 4 - i,
+                        width: width,
+                        height: 1,
+                        color: rgb(0.96 - i * 0.1, 0.62 - i * 0.05, 0.05 + i * 0.1), // Gradient colors
+                    });
+                }
+
+                addText('UPSCALE DEVELOPMENT GROUP', leftMargin, yPosition, 22, boldFont, rgb(1, 1, 1));
+                yPosition -= 25;
+                addText('CLIENT: PARADIGM ORAL | CONSTRUCTION SUBMITTAL', leftMargin, yPosition, 14, font, rgb(0.9, 0.9, 0.9));
+                yPosition -= 50;
+
+                if (isMultipleMode) {
+                    // MULTIPLE SUBMITTALS MODE - COMPREHENSIVE
+                    addSectionHeader('📚 MULTIPLE SUBMITTALS PACKAGE', rgb(0.96, 0.62, 0.05));
+
+                    // Package Information Section
+                    addText('Project Information:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addText('Project Name:', leftMargin, yPosition, 9);
+                    addTextField('project_name', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                        document.getElementById('projectName')?.value || '');
+
+                    addText('Package Date:', leftMargin + 320, yPosition, 9);
+                    addTextField('package_date', leftMargin + 390, yPosition - 3, 100, fieldHeight,
+                        document.getElementById('packageDate')?.value || '');
+                    yPosition -= 22;
+
+                    addText('Response Date:', leftMargin, yPosition, 9);
+                    addTextField('response_date', leftMargin + 90, yPosition - 3, 130, fieldHeight,
+                        document.getElementById('packageResponseDate')?.value || '');
+
+                    addText('Package Notes:', leftMargin + 250, yPosition, 9);
+                    addTextField('package_notes', leftMargin + 330, yPosition - 3, 180, fieldHeight,
+                        document.getElementById('packageNotes')?.value || '');
+                    yPosition -= 30;
+
+                    // Contractor Information Section
+                    addText('Contractor Information:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addText('Company Name:', leftMargin, yPosition, 9);
+                    addTextField('contractor_company', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                        document.getElementById('contractorName')?.value || '');
+
+                    addText('Contact Person:', leftMargin + 320, yPosition, 9);
+                    addTextField('contact_person', leftMargin + 400, yPosition - 3, 130, fieldHeight,
+                        document.getElementById('contactPerson')?.value || '');
+                    yPosition -= 22;
+
+                    addText('Email Address:', leftMargin, yPosition, 9);
+                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 250, fieldHeight,
+                        document.getElementById('contactEmail')?.value || '');
+                    yPosition -= 30;
+
+                    // Compliance & QA Section
+                    addText('Compliance & Quality Assurance:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addCheckbox('compliance_code', leftMargin, yPosition, 12, 'Building Code Compliant');
+                    addCheckbox('compliance_leed', leftMargin + 150, yPosition, 12, 'LEED Requirements Met');
+                    addCheckbox('compliance_qc', leftMargin + 300, yPosition, 12, 'QC Manager Reviewed');
+                    yPosition -= 25;
+
+                    // Submittals Table
+                    if (submittalRows.length > 0) {
+                        checkPageSpace(120);
+                        addSectionHeader('📋 SUBMITTALS DETAILS', rgb(0.96, 0.62, 0.05));
+
+                        // Enhanced table headers with better spacing
+                        const tableY = yPosition;
+                        addText('Submittal No.', leftMargin, tableY, 9, boldFont);
+                        addText('Description', leftMargin + 90, tableY, 9, boldFont);
+                        addText('CSI Div.', leftMargin + 220, tableY, 9, boldFont);
+                        addText('Type', leftMargin + 270, tableY, 9, boldFont);
+                        addText('Priority', leftMargin + 310, tableY, 9, boldFont);
+                        addText('Spec Section', leftMargin + 380, tableY, 9, boldFont);
+                        addText('Rev.', leftMargin + 460, tableY, 9, boldFont);
+                        yPosition -= 20;
+
+                        // Draw table border
+                        currentPage.drawRectangle({
+                            x: leftMargin - 5,
+                            y: yPosition - 5,
+                            width: 450,
+                            height: 20,
+                            borderColor: rgb(0.5, 0.5, 0.5),
+                            borderWidth: 1,
+                        });
+
+                        yPosition -= 10;
+
+                        // Create enhanced form fields for each submittal
+                        for (let i = 0; i < submittalRows.length; i++) {
+                            checkPageSpace(30);
+                            const submittal = submittalRows[i];
+
+                            addTextField(`sub_${i}_number`, leftMargin, yPosition - 3, 85, smallFieldHeight, submittal.number);
+                            addTextField(`sub_${i}_description`, leftMargin + 90, yPosition - 3, 125, smallFieldHeight, submittal.description);
+                            addDropdown(`sub_${i}_division`, leftMargin + 220, yPosition - 3, 45, smallFieldHeight,
+                                ['', '03', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '21', '22', '23', '26', '27', '28']);
+                            addDropdown(`sub_${i}_type`, leftMargin + 270, yPosition - 3, 35, smallFieldHeight,
+                                ['', 'SD', 'PD', 'SM', 'MM', 'TE', 'CD', 'MS', 'WR']);
+                            addDropdown(`sub_${i}_priority`, leftMargin + 310, yPosition - 3, 65, smallFieldHeight,
+                                ['', 'CRITICAL', 'HIGH', 'NORMAL', 'LOW']);
+                            addTextField(`sub_${i}_spec`, leftMargin + 380, yPosition - 3, 75, smallFieldHeight, submittal.spec);
+                            addDropdown(`sub_${i}_revision`, leftMargin + 460, yPosition - 3, 30, smallFieldHeight,
+                                ['00', '01', '02', '03', '04', '05']);
+
+                            yPosition -= 25;
+                        }
+
+                        // Individual approval workflows for each submittal
+                        for (let i = 0; i < submittalRows.length; i++) {
+                            const submittal = submittalRows[i];
+                            const submittalTitle = submittal.number || `Submittal ${i + 1}`;
+
+                            checkPageSpace(200);
+                            addSectionHeader(`🔍 APPROVAL WORKFLOW - ${submittalTitle.toUpperCase()}`, rgb(0.02, 0.58, 0.41));
+
+                            // Get trade type for conditional workflow
+                            const tradeType = getTradeType(submittal.division);
+
+                            // Contractor Review
+                            addText('👷 CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                            yPosition -= 15;
+
+                            addText('Quality Control Comments:', leftMargin, yPosition, 8);
+                            addTextField(`contractor_comments_${i}`, leftMargin, yPosition - 12, 400, 35, '', true);
+                            yPosition -= 45;
+
+                            addText('Submittal Status:', leftMargin, yPosition, 8, boldFont);
+                            addCheckbox(`contractor_ready_${i}`, leftMargin + 100, yPosition - 3, 10, '✅ Ready for Review');
+                            addCheckbox(`contractor_incomplete_${i}`, leftMargin + 230, yPosition - 3, 10, '⚠️ Incomplete - Revise');
+                            addCheckbox(`contractor_withdrawn_${i}`, leftMargin + 370, yPosition - 3, 10, '🚫 Withdrawn');
+                            yPosition -= 18;
+
+                            addText('Signature:', leftMargin, yPosition, 8);
+                            drawSignatureLine(leftMargin + 60, yPosition - 2, 150);
+                            addText('Date:', leftMargin + 230, yPosition, 8);
+                            addTextField(`contractor_date_${i}`, leftMargin + 260, yPosition - 5, 80, 12);
+                            yPosition -= 25;
+
+                            // Trade-specific reviewer with enhanced details
+                            if (tradeType === 'MEP') {
+                                addText('⚡ MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                                yPosition -= 15;
+
+                                addText('MEP Engineering Comments (Mechanical, Electrical, Plumbing coordination):', leftMargin, yPosition, 8);
+                                addTextField(`mep_comments_${i}`, leftMargin, yPosition - 12, 400, 35, '', true);
+                                yPosition -= 45;
+
+                                addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                                addCheckbox(`mep_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                                addCheckbox(`mep_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                                addCheckbox(`mep_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                                addCheckbox(`mep_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                yPosition -= 18;
+
+                                addText('Signature:', leftMargin, yPosition, 8);
+                                drawSignatureLine(leftMargin + 60, yPosition - 2, 150);
+                                addText('Date:', leftMargin + 230, yPosition, 8);
+                                addTextField(`mep_date_${i}`, leftMargin + 260, yPosition - 5, 80, 12);
+                                yPosition -= 25;
+
+                            } else if (tradeType === 'STRUCTURAL') {
+                                addText('🏗️ STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                                yPosition -= 15;
+
+                                addText('Structural Engineering Comments (Load calculations, connections, code compliance):', leftMargin, yPosition, 8);
+                                addTextField(`structural_comments_${i}`, leftMargin, yPosition - 12, 400, 35, '', true);
+                                yPosition -= 45;
+
+                                addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                                addCheckbox(`struct_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                                addCheckbox(`struct_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                                addCheckbox(`struct_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                                addCheckbox(`struct_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                yPosition -= 18;
+
+                                addText('Signature:', leftMargin, yPosition, 8);
+                                drawSignatureLine(leftMargin + 60, yPosition - 2, 150);
+                                addText('Date:', leftMargin + 230, yPosition, 8);
+                                addTextField(`struct_date_${i}`, leftMargin + 260, yPosition - 5, 80, 12);
+                                yPosition -= 25;
+
+                            } else {
+                                addText('🏛️ ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
+                                yPosition -= 15;
+
+                                addText('Architectural Review Comments (Design intent, aesthetic compliance, coordination):', leftMargin, yPosition, 8);
+                                addTextField(`architect_comments_${i}`, leftMargin, yPosition - 12, 400, 35, '', true);
+                                yPosition -= 45;
+
+                                addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                                addCheckbox(`arch_approved_${i}`, leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                                addCheckbox(`arch_approved_noted_${i}`, leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                                addCheckbox(`arch_revise_${i}`, leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                                addCheckbox(`arch_rejected_${i}`, leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                                yPosition -= 18;
+
+                                addText('Signature:', leftMargin, yPosition, 8);
+                                drawSignatureLine(leftMargin + 60, yPosition - 2, 150);
+                                addText('Date:', leftMargin + 230, yPosition, 8);
+                                addTextField(`arch_date_${i}`, leftMargin + 260, yPosition - 5, 80, 12);
+                                yPosition -= 25;
+                            }
+
+                            // Owner Rep Final Review
+                            addText('👤 OWNER REP FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                            yPosition -= 15;
+
+                            addText('Owner Representative Comments (Project coordination, final approval decision):', leftMargin, yPosition, 8);
+                            addTextField(`owner_comments_${i}`, leftMargin, yPosition - 12, 400, 35, '', true);
+                            yPosition -= 45;
+
+                            addText('Final Status:', leftMargin, yPosition, 8, boldFont);
+                            addCheckbox(`owner_final_approved_${i}`, leftMargin + 70, yPosition - 3, 10, '✅ Final Approval - Proceed');
+                            addCheckbox(`owner_conditions_${i}`, leftMargin + 220, yPosition - 3, 10, '⚠️ Approved with Conditions');
+                            yPosition -= 15;
+                            addCheckbox(`owner_hold_${i}`, leftMargin + 70, yPosition - 3, 10, '⏸️ Hold - Pending Resolution');
+                            addCheckbox(`owner_rejected_${i}`, leftMargin + 250, yPosition - 3, 10, '❌ Final Rejection');
+                            yPosition -= 18;
+
+                            addText('Signature:', leftMargin, yPosition, 8);
+                            drawSignatureLine(leftMargin + 60, yPosition - 2, 150);
+                            addText('Date:', leftMargin + 230, yPosition, 8);
+                            addTextField(`owner_date_${i}`, leftMargin + 260, yPosition - 5, 80, 12);
+                            yPosition -= 40;
+                        }
+                    }
+
+                } else {
+                    // SINGLE SUBMITTAL MODE - COMPREHENSIVE
+                    addSectionHeader('📄 SINGLE SUBMITTAL', rgb(0.96, 0.62, 0.05));
+
+                    // Submittal Number
+                    addText('SUBMITTAL NO:', leftMargin, yPosition, 14, boldFont);
+                    addTextField('submittal_prefix', leftMargin + 120, yPosition - 5, 100, fieldHeight, 'UDG-PO-25-');
+                    addTextField('division_number', leftMargin + 225, yPosition - 5, 40, fieldHeight,
+                        document.getElementById('divisionNumber')?.value || 'XXX');
+                    addText('-', leftMargin + 270, yPosition, 14, boldFont);
+                    addTextField('sequence_number', leftMargin + 280, yPosition - 5, 50, fieldHeight,
+                        document.getElementById('sequenceNumber')?.value || '000');
+                    yPosition -= 35;
+
+                    // Project Information
+                    addText('Project Information:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addText('Project Name:', leftMargin, yPosition, 9);
+                    addTextField('project_name', leftMargin + 90, yPosition - 3, 200, fieldHeight,
+                        document.getElementById('projectName')?.value || '');
+
+                    addText('CSI Division:', leftMargin + 320, yPosition, 9);
+                    addDropdown('csi_division', leftMargin + 390, yPosition - 3, 120, fieldHeight,
+                        ['', '03 - Concrete', '05 - Metals', '06 - Wood/Plastics', '07 - Thermal/Moisture Protection',
+                         '08 - Openings', '09 - Finishes', '10 - Specialties', '11 - Equipment', '12 - Furnishings',
+                         '13 - Special Construction', '14 - Conveying Equipment', '21 - Fire Suppression',
+                         '22 - Plumbing', '23 - HVAC', '26 - Electrical', '27 - Communications', '28 - Electronic Safety']);
+                    yPosition -= 22;
+
+                    addText('Submittal Date:', leftMargin, yPosition, 9);
+                    addTextField('submittal_date', leftMargin + 90, yPosition - 3, 100, fieldHeight,
+                        document.getElementById('submittalDate')?.value || '');
+
+                    addText('Response Date:', leftMargin + 220, yPosition, 9);
+                    addTextField('response_date', leftMargin + 310, yPosition - 3, 100, fieldHeight,
+                        document.getElementById('responseDate')?.value || '');
+
+                    addText('Spec Section:', leftMargin + 430, yPosition, 9);
+                    addTextField('spec_section', leftMargin + 490, yPosition - 3, 70, fieldHeight,
+                        document.getElementById('specSection')?.value || '');
+                    yPosition -= 25;
+
+                    // Submittal Details
+                    addText('Submittal Details:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addText('Type:', leftMargin, yPosition, 9);
+                    addDropdown('submittal_type', leftMargin + 40, yPosition - 3, 140, fieldHeight,
+                        ['', 'SD - Shop Drawings', 'PD - Product Data', 'SM - Samples', 'MM - Mix Designs',
+                         'TE - Test Reports', 'CD - Certificates', 'MS - Material Safety Data', 'WR - Warranty Information']);
+
+                    addText('Priority:', leftMargin + 200, yPosition, 9);
+                    addDropdown('priority', leftMargin + 240, yPosition - 3, 100, fieldHeight,
+                        ['', 'CRITICAL - Stop Work', 'HIGH - Rush Review', 'NORMAL - Standard', 'LOW - No Rush']);
+
+                    addText('Revision:', leftMargin + 360, yPosition, 9);
+                    addDropdown('revision', leftMargin + 410, yPosition - 3, 80, fieldHeight,
+                        ['00 - Initial', '01 - First Rev', '02 - Second Rev', '03 - Third Rev', '04 - Fourth Rev']);
+                    yPosition -= 22;
+
+                    addText('Description:', leftMargin, yPosition, 9);
+                    addTextField('description', leftMargin + 80, yPosition - 3, 400, fieldHeight,
+                        document.getElementById('description')?.value || '');
+                    yPosition -= 30;
+
+                    // Contractor Information
+                    addText('Contractor Information:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addText('Company Name:', leftMargin, yPosition, 9);
+                    addTextField('contractor_company', leftMargin + 100, yPosition - 3, 200, fieldHeight,
+                        document.getElementById('contractorName')?.value || '');
+
+                    addText('Contact Person:', leftMargin + 320, yPosition, 9);
+                    addTextField('contact_person', leftMargin + 400, yPosition - 3, 130, fieldHeight,
+                        document.getElementById('contactPerson')?.value || '');
+                    yPosition -= 22;
+
+                    addText('Email Address:', leftMargin, yPosition, 9);
+                    addTextField('contact_email', leftMargin + 90, yPosition - 3, 250, fieldHeight,
+                        document.getElementById('contactEmail')?.value || '');
+                    yPosition -= 30;
+
+                    // Compliance & QA Section
+                    addText('Compliance & Quality Assurance:', leftMargin, yPosition, 11, boldFont);
+                    yPosition -= 18;
+
+                    addCheckbox('compliance_code', leftMargin, yPosition, 12, 'Building Code Compliant');
+                    addCheckbox('compliance_leed', leftMargin + 170, yPosition, 12, 'LEED Requirements Met');
+                    addCheckbox('compliance_qc', leftMargin + 330, yPosition, 12, 'QC Manager Reviewed');
+                    yPosition -= 30;
+
+                    // Single Approval Workflow
+                    checkPageSpace(250);
+                    addSectionHeader('🔍 DETAILED REVIEW & APPROVAL WORKFLOW', rgb(0.02, 0.58, 0.41));
+
+                    // Get CSI division from form to determine workflow
+                    const selectedDivision = document.getElementById('csiDivision')?.value || '';
+                    const tradeType = getTradeType(selectedDivision);
+
+                    // Contractor Review
+                    addText('👷 CONTRACTOR SUBMITTAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                    yPosition -= 15;
+
+                    addText('Internal Quality Control Comments:', leftMargin, yPosition, 8);
+                    addTextField('contractor_qc_comments', leftMargin, yPosition - 12, 400, 40, '', true);
+                    yPosition -= 50;
+
+                    addText('Submittal Status:', leftMargin, yPosition, 8, boldFont);
+                    addCheckbox('contractor_ready', leftMargin + 100, yPosition - 3, 10, '✅ Ready for Review');
+                    addCheckbox('contractor_incomplete', leftMargin + 230, yPosition - 3, 10, '⚠️ Incomplete - Revise');
+                    addCheckbox('contractor_withdrawn', leftMargin + 370, yPosition - 3, 10, '🚫 Withdrawn');
+                    yPosition -= 18;
+
+                    addText('QC Manager Signature:', leftMargin, yPosition, 8);
+                    drawSignatureLine(leftMargin + 120, yPosition - 2, 150);
+                    addText('Date:', leftMargin + 290, yPosition, 8);
+                    addTextField('contractor_date', leftMargin + 320, yPosition - 5, 80, 12);
+                    yPosition -= 30;
+
+                    // Trade-specific reviewer
+                    if (tradeType === 'MEP') {
+                        addText('⚡ MEP ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                        yPosition -= 15;
+
+                        addText('MEP Engineering Comments (Mechanical, Electrical, Plumbing coordination, energy efficiency):', leftMargin, yPosition, 8);
+                        addTextField('mep_engineering_comments', leftMargin, yPosition - 12, 400, 40, '', true);
+                        yPosition -= 50;
+
+                        addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                        addCheckbox('mep_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                        addCheckbox('mep_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                        addCheckbox('mep_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                        addCheckbox('mep_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        yPosition -= 18;
+
+                        addText('MEP Engineer Signature:', leftMargin, yPosition, 8);
+                        drawSignatureLine(leftMargin + 120, yPosition - 2, 150);
+                        addText('Date:', leftMargin + 290, yPosition, 8);
+                        addTextField('mep_date', leftMargin + 320, yPosition - 5, 80, 12);
+                        yPosition -= 30;
+
+                    } else if (tradeType === 'STRUCTURAL') {
+                        addText('🏗️ STRUCTURAL ENGINEER REVIEW', leftMargin, yPosition, 10, boldFont);
+                        yPosition -= 15;
+
+                        addText('Structural Engineering Comments (Load calculations, connection details, structural adequacy, code compliance):', leftMargin, yPosition, 8);
+                        addTextField('structural_engineering_comments', leftMargin, yPosition - 12, 400, 40, '', true);
+                        yPosition -= 50;
+
+                        addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                        addCheckbox('structural_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                        addCheckbox('structural_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                        addCheckbox('structural_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                        addCheckbox('structural_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        yPosition -= 18;
+
+                        addText('Structural Engineer Signature:', leftMargin, yPosition, 8);
+                        drawSignatureLine(leftMargin + 120, yPosition - 2, 150);
+                        addText('Date:', leftMargin + 290, yPosition, 8);
+                        addTextField('structural_date', leftMargin + 320, yPosition - 5, 80, 12);
+                        yPosition -= 30;
+
+                    } else {
+                        addText('🏛️ ARCHITECT REVIEW', leftMargin, yPosition, 10, boldFont);
+                        yPosition -= 15;
+
+                        addText('Architectural Review Comments (Design intent, aesthetic compliance, material specifications, coordination):', leftMargin, yPosition, 8);
+                        addTextField('architectural_comments', leftMargin, yPosition - 12, 400, 40, '', true);
+                        yPosition -= 50;
+
+                        addText('Review Status:', leftMargin, yPosition, 8, boldFont);
+                        addCheckbox('architect_approved', leftMargin + 80, yPosition - 3, 10, '✅ Approved');
+                        addCheckbox('architect_approved_noted', leftMargin + 150, yPosition - 3, 10, '⚠️ Approved as Noted');
+                        addCheckbox('architect_revise', leftMargin + 270, yPosition - 3, 10, '🔄 Revise & Resubmit');
+                        addCheckbox('architect_rejected', leftMargin + 390, yPosition - 3, 10, '❌ Rejected');
+                        yPosition -= 18;
+
+                        addText('Architect Signature:', leftMargin, yPosition, 8);
+                        drawSignatureLine(leftMargin + 120, yPosition - 2, 150);
+                        addText('Date:', leftMargin + 290, yPosition, 8);
+                        addTextField('architect_date', leftMargin + 320, yPosition - 5, 80, 12);
+                        yPosition -= 30;
+                    }
+
+                    // Project Manager Final Review
+                    addText('📋 PROJECT MANAGER FINAL REVIEW', leftMargin, yPosition, 10, boldFont);
+                    yPosition -= 15;
+
+                    addText('Project Management Comments (Schedule impact, cost implications, overall project coordination):', leftMargin, yPosition, 8);
+                    addTextField('project_mgmt_comments', leftMargin, yPosition - 12, 400, 40, '', true);
+                    yPosition -= 50;
+
+                    addText('Final Status:', leftMargin, yPosition, 8, boldFont);
+                    addCheckbox('pm_final_approved', leftMargin + 70, yPosition - 3, 10, '✅ Final Approval - Proceed');
+                    addCheckbox('pm_conditions', leftMargin + 220, yPosition - 3, 10, '⚠️ Approved with Conditions');
+                    yPosition -= 15;
+                    addCheckbox('pm_hold', leftMargin + 70, yPosition - 3, 10, '⏸️ Hold - Pending Resolution');
+                    addCheckbox('pm_rejected', leftMargin + 250, yPosition - 3, 10, '❌ Final Rejection');
+                    yPosition -= 18;
+
+                    addText('Project Manager Signature:', leftMargin, yPosition, 8);
+                    drawSignatureLine(leftMargin + 130, yPosition - 2, 150);
+                    addText('Date:', leftMargin + 300, yPosition, 8);
+                    addTextField('pm_date', leftMargin + 330, yPosition - 5, 80, 12);
+                    yPosition -= 30;
+                }
+
+                // File Attachments Section
+                checkPageSpace(80);
+                addSectionHeader('📎 SUBMITTAL ATTACHMENTS', rgb(0.96, 0.62, 0.05));
+
+                if (attachedFiles.length > 0) {
+                    addText('Attached Files:', leftMargin, yPosition, 9, boldFont);
+                    yPosition -= 15;
+
+                    for (let i = 0; i < Math.min(attachedFiles.length, 10); i++) { // Limit to 10 files
+                        const file = attachedFiles[i];
+                        const fileSize = formatFileSize(file.size);
+                        addText(`• ${file.name} (${fileSize})`, leftMargin + 10, yPosition, 8);
+                        yPosition -= 12;
+                    }
+
+                    if (attachedFiles.length > 10) {
+                        addText(`... and ${attachedFiles.length - 10} more files`, leftMargin + 10, yPosition, 8, font, rgb(0.5, 0.5, 0.5));
+                        yPosition -= 12;
+                    }
+                } else {
+                    addText('No files attached to this submittal.', leftMargin, yPosition, 9, font, rgb(0.5, 0.5, 0.5));
+                    yPosition -= 15;
+                }
+
+                addText('Attachment Notes:', leftMargin, yPosition, 9);
+                addTextField('attachment_notes', leftMargin + 100, yPosition - 3, 300, 30, '', true);
+                yPosition -= 40;
+
+                // Reference Key Section
+                checkPageSpace(120);
+                addSectionHeader('📖 REFERENCE KEY', rgb(0.4, 0.4, 0.4));
+
+                // CSI Divisions Reference
+                addText('CSI DIVISIONS:', leftMargin, yPosition, 9, boldFont);
+                yPosition -= 12;
+                const csiDivisions = [
+                    '03-Concrete, 05-Metals, 06-Wood/Plastics, 07-Thermal/Moisture',
+                    '08-Openings, 09-Finishes, 10-Specialties, 11-Equipment',
+                    '12-Furnishings, 13-Special Construction, 14-Conveying',
+                    '21-Fire Suppression, 22-Plumbing, 23-HVAC',
+                    '26-Electrical, 27-Communications, 28-Electronic Safety'
+                ];
+
+                for (const division of csiDivisions) {
+                    addText(division, leftMargin + 10, yPosition, 7);
+                    yPosition -= 10;
+                }
+
+                yPosition -= 5;
+
+                // Submittal Types Reference
+                addText('SUBMITTAL TYPES:', leftMargin, yPosition, 9, boldFont);
+                yPosition -= 12;
+                const submittalTypes = [
+                    'SD-Shop Drawings, PD-Product Data, SM-Samples, MM-Mix Designs',
+                    'TE-Test Reports, CD-Certificates, MS-Material Safety Data, WR-Warranty'
+                ];
+
+                for (const type of submittalTypes) {
+                    addText(type, leftMargin + 10, yPosition, 7);
+                    yPosition -= 10;
+                }
+
+                yPosition -= 5;
+
+                // Priority Levels Reference
+                addText('PRIORITY LEVELS:', leftMargin, yPosition, 9, boldFont);
+                yPosition -= 12;
+                addText('CRITICAL-Stop Work, HIGH-Rush Review, NORMAL-Standard, LOW-No Rush', leftMargin + 10, yPosition, 7);
+
+                // Pre-fill all available values from HTML form
+                try {
+                    const form = pdfDoc.getForm();
+
+                    // Auto-populate from HTML form fields
+                    const formMappings = [
+                        { htmlId: 'projectName', pdfField: 'project_name' },
+                        { htmlId: 'contractorName', pdfField: 'contractor_company' },
+                        { htmlId: 'contactPerson', pdfField: 'contact_person' },
+                        { htmlId: 'contactEmail', pdfField: 'contact_email' },
+                        { htmlId: 'submittalDate', pdfField: 'submittal_date' },
+                        { htmlId: 'responseDate', pdfField: 'response_date' },
+                        { htmlId: 'specSection', pdfField: 'spec_section' },
+                        { htmlId: 'description', pdfField: 'description' },
+                        { htmlId: 'packageDate', pdfField: 'package_date' },
+                        { htmlId: 'packageResponseDate', pdfField: 'response_date' },
+                        { htmlId: 'packageNotes', pdfField: 'package_notes' }
+                    ];
+
+                    for (const mapping of formMappings) {
+                        const htmlElement = document.getElementById(mapping.htmlId);
+                        if (htmlElement?.value) {
+                            try {
+                                form.getTextField(mapping.pdfField).setText(htmlElement.value);
+                            } catch (e) {
+                                // Field might not exist in current mode
+                            }
+                        }
+                    }
+
+                    // Handle checkboxes
+                    const checkboxMappings = [
+                        { htmlId: 'codeCompliant', pdfField: 'compliance_code' },
+                        { htmlId: 'leedCompliant', pdfField: 'compliance_leed' },
+                        { htmlId: 'qcReviewed', pdfField: 'compliance_qc' }
+                    ];
+
+                    for (const mapping of checkboxMappings) {
+                        const htmlElement = document.getElementById(mapping.htmlId);
+                        if (htmlElement?.checked) {
+                            try {
+                                form.getCheckBox(mapping.pdfField).check();
+                            } catch (e) {
+                                // Field might not exist
+                            }
+                        }
+                    }
+
+                } catch (e) {
+                    console.log('Some fields could not be pre-filled:', e);
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = isMultipleMode ?
+                    `UDG_Multiple_Submittals_${submittalRows.length}_items_FILLABLE.pdf` :
+                    'UDG_Construction_Submittal_FILLABLE.pdf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                alert(`🎉 Comprehensive fillable PDF generated!\n\n✅ Complete form field mapping\n✅ Professional styling & branding\n✅ Conditional approval workflows\n✅ Pre-filled from current form data\n✅ ${isMultipleMode ? `${submittalRows.length} submittals` : '1 submittal'} ready for use`);
+
+            } catch (error) {
+                console.error('Error generating comprehensive PDF:', error);
+                alert('Error generating PDF: ' + error.message);
+            }
+        }
+
+        // Make functions available globally for onclick handlers
+        window.switchMode = switchMode;
+        window.addSubmittalRow = addSubmittalRow;
+        window.removeSubmittalRow = removeSubmittalRow;
+        window.removeFile = removeFile;
+        window.handleDrop = handleDrop;
+        window.handleDragOver = handleDragOver;
+        window.handleDragLeave = handleDragLeave;
+        window.generateFillablePDF = generateFillablePDF;
+    </script>
 </body>
 </html>
